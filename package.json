@@ -1,0 +1,20 @@
+{
+  "name": "wlans-web",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.15.1",
+  "scripts": {
+    "dev": "pnpm --filter @wlans/web dev",
+    "build": "pnpm --filter @wlans/web build",
+    "start": "pnpm --filter @wlans/web start",
+    "lint": "pnpm --filter @wlans/web lint",
+    "typecheck": "pnpm -r typecheck",
+    "tokens:verify": "python packages/design-tokens/contrast-check.py",
+    "check:bundle": "node scripts/check-bundle.mjs",
+    "check:routes": "node scripts/check-routes.mjs",
+    "verify": "pnpm typecheck && pnpm tokens:verify && pnpm build && pnpm check:bundle && pnpm check:routes"
+  },
+  "devDependencies": {
+    "simple-icons": "^16.28.0"
+  }
+}

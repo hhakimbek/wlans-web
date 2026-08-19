@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to the same branch cancels the previous run: a queue of stale
+# builds tells you nothing and costs minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # ── Gates that do not need a build ───────────────────────────────────
+      # Ordered cheapest-first so an obvious break fails in seconds rather
+      # than after a three-minute production build.
+
+      - name: Types
+        run: pnpm typecheck
+
+      - name: Colour contrast and sRGB gamut
+        # Verifies every token pair in the palette against WCAG AA and checks
+        # that no OKLCH colour falls outside sRGB — clipping the eye cannot see
+        # on the authoring display but every visitor's browser will.
+        run: pnpm tokens:verify
+
+      # ── Build and the gates that read its output ─────────────────────────
+
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://wlans.uz
+
+      - name: First-load JS budget
+        run: node scripts/check-bundle.mjs
+
+      - name: Sitemap, canonical and route parity
+        run: node scripts/check-routes.mjs

@@ -1,0 +1,14 @@
+{
+  "name": "@wlans/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./motion.ts",
+    "./index.css": "./index.css",
+    "./scale.css": "./scale.css",
+    "./color.css": "./color.css",
+    "./typography.css": "./typography.css",
+    "./motion.css": "./motion.css"
+  }
+}

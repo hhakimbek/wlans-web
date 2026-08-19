@@ -1,0 +1,157 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   wlans · design tokens · TYPOGRAPHY
+
+   Family: Manrope — one variable superfamily, 200-800.
+
+   The ui-ux-pro-max profile for a modern agency site recommends Poppins.
+   Poppins has no Cyrillic, which makes it unusable under D1 (uz + en + ru):
+   a Russian heading would silently fall back to a different face mid-page.
+   Manrope is the same register — geometric, modern, friendly — with full
+   `cyrillic` and `cyrillic-ext` coverage and a variable weight axis, so one
+   file spans every weight the site uses.
+
+   Mono is the system stack. It appears only on a handful of technical labels,
+   and downloading a whole family for them would cost more than it returns.
+
+   ⚠ Uzbek Latin needs U+02BB (oʻ, gʻ). Verify it is present in the shipped
+   Manrope subset before the uz locale goes live.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Loaded via next/font/local as variable fonts, self-hosted, subset by
+     unicode-range so a uz/en visitor never downloads the Cyrillic block. */
+  --font-sans:
+    'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  --font-mono:
+    ui-monospace, 'SFMono-Regular', 'Cascadia Mono', 'Liberation Mono', Menlo,
+    Consolas, monospace;
+
+  /* Weights. Four is the whole range — more is indecision, not hierarchy.
+     Hierarchy comes from weight + size + leading as a set (see scale.css). */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────
+   `font: 100%/1.5` respects the user's browser text-size setting. Combined
+   with rem spacing in scale.css, enlarging text scales the layout instead of
+   breaking it. */
+html {
+  font-family: var(--font-sans);
+  font-size: 100%;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  font-optical-sizing: auto;
+  font-synthesis-weight: none; /* never fake a weight we did not ship */
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Numerics ────────────────────────────────────────────────────────────
+   Proportional figures in prose (they read better); tabular everywhere a
+   number changes in place. The simulator HUD updates FPS, byte count and
+   flush time every frame — proportional figures there would make the whole
+   panel twitch. */
+:root {
+  font-variant-numeric: proportional-nums;
+}
+
+.u-tabular,
+.display-stats,
+[data-live-number] {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* ── Code ────────────────────────────────────────────────────────────────
+   Ligatures OFF. In prose they are pleasant; in a code sample an embedded
+   engineer will copy verbatim, rendering `!=` as `≠` misrepresents the
+   source. This brand's whole claim is that what you see is what runs. */
+code,
+kbd,
+pre,
+samp,
+.t-mono {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+  font-feature-settings: 'liga' 0, 'calt' 0;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+pre {
+  tab-size: 2; /* matches the framework's own source style */
+}
+
+/* ── Prose ───────────────────────────────────────────────────────────────
+   Measure is capped by character count, not viewport width: readability is
+   governed by line length. */
+.prose {
+  max-width: var(--width-prose);
+  font-size: var(--t-body-size);
+  line-height: var(--t-body-lh);
+  color: var(--text-2);
+  text-wrap: pretty;
+  hyphens: auto;
+}
+
+.prose :is(h1, h2, h3, h4) {
+  color: var(--text-1);
+  text-wrap: balance;
+}
+
+/* Scroll-margin so an anchored heading is not hidden under sticky chrome. */
+.prose :is(h1, h2, h3, h4)[id] {
+  scroll-margin-top: var(--space-8);
+}
+
+.prose a {
+  color: var(--text-1);
+  text-decoration: underline;
+  text-decoration-color: var(--line-control);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--dur-fast) var(--ease-out);
+}
+
+.prose a:hover {
+  text-decoration-color: var(--brand);
+}
+
+/* ── Cyrillic leading correction ─────────────────────────────────────────
+   Cyrillic has taller ascenders and shorter descenders than Latin; identical
+   line-height reads tighter in Russian than in English. A ~4% correction on
+   the ru locale keeps the two visually equal. This is the kind of detail
+   that separates a translated site from a trilingual one. */
+:lang(ru) .prose,
+[lang='ru'] .prose {
+  line-height: calc(var(--t-body-lh) * 1.04);
+}
+
+/* ── Uzbek ʻ ─────────────────────────────────────────────────────────────
+   Prevent a line break between the letter and its modifier in oʻ / gʻ.
+   Content authors write U+02BB, never an apostrophe — enforced in lint. */
+:lang(uz) {
+  word-break: keep-all;
+}
+
+/* ── Selection ─────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--blue-100);
+  color: var(--text-1);
+}
+
+/* ── Inputs ──────────────────────────────────────────────────────────────
+   16px floor: below it, iOS Safari zooms the viewport on focus and the user
+   has to pinch back out. Applies to every text-entry control, no exceptions. */
+:where(input, textarea, select) {
+  font: inherit;
+  font-size: max(var(--t-body-size), 1rem);
+}
+
+::placeholder {
+  color: var(--text-3);
+  opacity: 1; /* Firefox dims placeholders by default; we already chose the value */
+}

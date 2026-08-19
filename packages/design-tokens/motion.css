@@ -1,0 +1,134 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   wlans · design tokens · MOTION
+   Phase 2 output. Direction-independent — these values do not change when
+   the visual direction is chosen.
+
+   Two binding rules, enforced in review:
+   1. Only `transform` and `opacity` are ever animated.
+   2. Exits are one step faster than enters. Leaving should never feel slow.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Duration ──────────────────────────────────────────────────────────
+     Named by intent, not by number, so a component cannot invent its own. */
+  --dur-instant: 100ms; /* press feedback — must fire on pointer-down       */
+  --dur-fast:    160ms; /* hover, small state change, ALL exits             */
+  --dur-base:    240ms; /* default enter                                    */
+  --dur-slow:    360ms; /* surface / sheet enter, material arrival          */
+  --dur-page:    480ms; /* route transition                                 */
+
+  /* ── Easing ────────────────────────────────────────────────────────────
+     `--ease-out` leaves fast and settles soft: the web analogue of a
+     critically damped spring, for anything not gesture-driven.
+     Reversible transitions must use the in/out pair, not one curve. */
+  --ease-out:    cubic-bezier(0.16, 1.00, 0.30, 1.00);
+  --ease-in:     cubic-bezier(0.70, 0.00, 0.84, 0.00);
+  --ease-in-out: cubic-bezier(0.65, 0.00, 0.35, 1.00);
+
+  /* ── Stagger ───────────────────────────────────────────────────────────
+     Capped on purpose: past ~6 items a stagger stops reading as rhythm and
+     starts reading as lag. Items beyond the cap animate with the last one. */
+  --stagger:     40ms;
+  --stagger-max: 6;
+
+  /* ── Scroll-driven reveal ──────────────────────────────────────────────
+     Travel is small by design. Big entrance moves are what make a page feel
+     templated, and they cost the most frames on low-end devices. */
+  --reveal-y:    12px;
+  --reveal-blur: 0px; /* deliberately 0 — animating blur is not compositor-safe */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MotionTier
+   Resolved ONCE before first paint by an inline script, which writes
+   `data-motion` onto <html>. Components never re-detect capability
+   themselves — one decision, read everywhere.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* full  — desktop, deviceMemory >= 8, hardwareConcurrency >= 8
+           inherits :root unchanged; 3D and translucency permitted */
+
+/* reduced — mobile / coarse pointer / mid-range hardware */
+[data-motion='reduced'] {
+  --dur-slow:    280ms;
+  --dur-page:    320ms;
+  --stagger:     28ms;
+  --stagger-max: 4;
+  --reveal-y:    8px;
+}
+
+/* static — prefers-reduced-motion, Save-Data, or a slow first-frame probe.
+   Durations collapse to 1ms rather than 0: a 0ms transition never fires
+   `transitionend`, and components that await it would hang. */
+[data-motion='static'] {
+  --dur-instant: 1ms;
+  --dur-fast:    1ms;
+  --dur-base:    1ms;
+  --dur-slow:    1ms;
+  --dur-page:    1ms;
+  --stagger:     0ms;
+  --stagger-max: 0;
+  --reveal-y:    0px;
+}
+
+/* Safety net: if JS fails or is blocked, the OS preference still wins.
+   This is why reduced motion is handled at the TOKEN level and not with a
+   media query inside every component. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 1ms;
+    --dur-fast:    1ms;
+    --dur-base:    1ms;
+    --dur-slow:    1ms;
+    --dur-page:    1ms;
+    --stagger:     0ms;
+    --stagger-max: 0;
+    --reveal-y:    0px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Materials
+   On a dark surface, depth comes from surface lightness plus a hairline top
+   highlight — not from large shadows, which are invisible on near-black.
+   Translucency is a capability, not a default: backdrop-filter over
+   scrolling content is one of the few reliable ways to lose frames on
+   low-end Android.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --material-blur:       20px;
+  --material-saturate:   180%;
+  --material-opacity:    0.72;
+}
+
+[data-motion='static'] {
+  --material-blur:     0px;
+  --material-opacity:  1; /* solid chrome — no compositing cost */
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material-blur:    0px;
+    --material-opacity: 1;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Utilities
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Press feedback. Fires on pointer-down, never on click — waiting for
+   touch-up is the single most common reason a UI feels dead. */
+.u-press {
+  transition: transform var(--dur-instant) var(--ease-out);
+}
+.u-press:active {
+  transform: scale(0.97);
+}
+
+/* `will-change` is declared only while motion is imminent and removed after.
+   A permanent will-change permanently occupies a compositor layer. */
+.u-animating {
+  will-change: transform, opacity;
+}

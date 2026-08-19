@@ -1,0 +1,627 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Component styles — light, blue-led, glass and depth.
+
+   Built from the ui-ux-pro-max "Glassmorphism / modern agency" profile:
+   frosted chrome, backdrop blur, layered surfaces, blue-tinted elevation,
+   generous radii.
+
+   The previous pass was too austere and read as unfinished. Depth here is
+   deliberate, but it is paid for cheaply: gradients and shadows are painted
+   by the compositor, and there is no large `filter: blur()` anywhere on a
+   scrolling surface — that is one of the few reliable ways to lose frames on
+   a mid-range phone.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  border: var(--border-hairline) solid transparent;
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--t-label-size);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform var(--dur-instant) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+/* Feedback on press, not on release. */
+.btn:active { transform: scale(0.97); }
+
+.btn--primary {
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  box-shadow: var(--shadow-brand);
+}
+
+.btn--secondary {
+  background: var(--bg-2);
+  border-color: var(--line);
+  color: var(--text-1);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn--ghost { color: var(--brand); background: transparent; }
+
+.btn--lg { min-height: 56px; padding-inline: var(--space-6); font-size: 1rem; }
+
+@media (hover: hover) and (pointer: fine) {
+  .btn--primary:hover {
+    background: var(--brand-hover);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-1px);
+  }
+  .btn--secondary:hover { border-color: var(--blue-300); box-shadow: var(--shadow-sm); }
+  .btn--ghost:hover { background: var(--brand-soft); }
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--glass);
+  /* Standard property only. Declaring the -webkit- alias by hand made
+     Lightning CSS drop the unprefixed one, which silently removed the blur in
+     Firefox. Prefixing is the build tool's job — let it do it. */
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: var(--border-hairline) solid var(--line);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: 72px;
+}
+
+.header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 1.25rem;
+  font-weight: var(--weight-extrabold);
+  letter-spacing: -0.04em;
+  color: var(--text-1);
+  text-decoration: none;
+}
+
+/* A small gradient mark so the wordmark is not bare text. */
+.header__mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--grad-brand);
+  box-shadow: var(--shadow-brand);
+  color: #fff;
+}
+
+.header__nav { display: none; align-items: center; gap: var(--space-1); }
+@media (min-width: 900px) { .header__nav { display: flex; } }
+
+/* --nav-surface is the hover/open tint. `--brand-soft` (blue-50) sat so close
+   to the header ground that the open menu read as no state at all, so the nav
+   uses one step darker. */
+.header__link {
+  --nav-surface: var(--blue-100);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-1);
+  font-size: var(--t-label-size);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+[data-theme='dark'] .header__link { --nav-surface: oklch(0.546 0.215 263 / 0.24); }
+
+@media (hover: hover) and (pointer: fine) {
+  .header__link:hover { color: var(--brand); background: var(--nav-surface); }
+}
+
+.header__actions { display: flex; align-items: center; gap: var(--space-3); }
+
+.header__phone { display: none; color: var(--text-2); font-weight: var(--weight-semibold); text-decoration: none; }
+@media (min-width: 1100px) { .header__phone { display: inline; } }
+
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+
+.hero-wrap {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--blue-50), var(--bg-0) 62%);
+}
+
+/* Compound selector on purpose — it has to outrank the generic `.section`
+   padding regardless of which rule the bundler emits last. The top step is
+   deliberately smaller than the bottom one: the header already supplies
+   visual space above, so matching them left the hero floating. */
+.section.hero-wrap { padding-block: var(--space-6) var(--space-8); }
+@media (min-width: 768px) { .section.hero-wrap { padding-block: var(--space-7) var(--space-9); } }
+
+/* Soft colour blooms. Painted as radial-gradients on one absolutely
+   positioned layer rather than as blurred boxes — same look, no blur cost,
+   and it never enters the scroll compositing path. */
+.hero-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 720px;
+  background:
+    radial-gradient(42% 46% at 18% 22%, var(--glow-a), transparent 70%),
+    radial-gradient(38% 42% at 82% 12%, var(--glow-b), transparent 70%),
+    radial-gradient(46% 40% at 60% 58%, var(--glow-c), transparent 72%);
+  pointer-events: none;
+}
+
+.hero { position: relative; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-4) 6px var(--space-3);
+  border: var(--border-hairline) solid var(--blue-200);
+  border-radius: var(--radius-full);
+  background: var(--glass-strong);
+  box-shadow: var(--shadow-xs);
+  color: var(--blue-700);
+  font-size: var(--t-body-sm-size);
+  font-weight: var(--weight-semibold);
+}
+
+.pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--success);
+}
+
+.hero__title {
+  margin: var(--space-5) 0 0;
+  max-width: 16ch;
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  font-weight: var(--weight-extrabold);
+  color: var(--text-1);
+  text-wrap: balance;
+}
+
+/* One phrase in the headline carries the brand gradient. Restricted to a
+   single span: gradient text everywhere is what makes a page look generated. */
+.grad-text {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero__lede {
+  margin: var(--space-5) 0 0;
+  max-width: 54ch;
+  font-size: var(--t-body-lg-size);
+  line-height: var(--t-body-lg-lh);
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+.hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+
+.hero__trust {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-6);
+  color: var(--text-3);
+  font-size: var(--t-body-sm-size);
+}
+
+.hero__trust-item { display: inline-flex; align-items: center; gap: var(--space-2); }
+.hero__trust-item svg { color: var(--brand); }
+
+/* ── Devices ────────────────────────────────────────────────────────────── */
+
+.devices {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding: var(--space-2) var(--gutter) var(--space-5);
+  margin-inline: calc(var(--gutter) * -1);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+@media (min-width: 900px) {
+  .devices { justify-content: center; overflow: visible; margin-inline: 0; padding-inline: 0; }
+}
+
+.phone { flex: 0 0 auto; width: 172px; scroll-snap-align: center; }
+@media (min-width: 900px) { .phone { width: 200px; } }
+
+/* Staggered vertical offsets so the row reads as a composed group rather
+   than a filmstrip. */
+@media (min-width: 900px) {
+  .phone:nth-child(odd) { transform: translateY(18px); }
+  .phone:nth-child(2) { transform: translateY(-10px); }
+}
+
+/* A real device, not a rounded rectangle. Three things do the work: a metal
+   gradient whose light source is fixed top-left, a hairline rim that catches
+   that light on the inside edge, and a two-layer shadow — one tight contact
+   shadow, one wide cast. Take any of the three away and it flattens. */
+.phone__frame {
+  /* One set of knobs for every size this frame is drawn at. */
+  --frame-pad: 7px;
+  --frame-radius: 34px;
+  --frame-button-top: 26px;
+  position: relative;
+  aspect-ratio: 9 / 19.5;
+  padding: var(--frame-pad);
+  border-radius: var(--frame-radius);
+  background:
+    linear-gradient(
+      142deg,
+      oklch(0.78 0.012 260) 0%,
+      oklch(0.34 0.012 260) 14%,
+      oklch(0.26 0.010 260) 46%,
+      oklch(0.20 0.010 260) 72%,
+      oklch(0.62 0.012 260) 100%
+    );
+  box-shadow:
+    inset 0 0 0 1px oklch(1 0 0 / 0.16),
+    inset 0 1px 1px oklch(1 0 0 / 0.34),
+    inset 0 -1px 1px oklch(0 0 0 / 0.5),
+    0 2px 4px oklch(0.320 0.115 263 / 0.18),
+    0 18px 32px oklch(0.320 0.115 263 / 0.22),
+    0 42px 70px oklch(0.320 0.115 263 / 0.18);
+}
+
+/* Volume rocker and mute switch. One bar plus two offset copies of it, so
+   three buttons cost one pseudo-element. */
+.phone__frame::before {
+  content: '';
+  position: absolute;
+  left: -1.5px;
+  top: 19%;
+  width: 2px;
+  height: 4.5%;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(90deg, oklch(0.46 0.010 260), oklch(0.30 0.010 260));
+  /* box-shadow offsets cannot be percentages, so the spacing is in px and
+     tuned for the ~170px frame the hero uses. */
+  box-shadow:
+    0 var(--frame-button-top) 0 0 oklch(0.38 0.010 260),
+    0 calc(var(--frame-button-top) * 2) 0 0 oklch(0.38 0.010 260);
+}
+
+/* Side button, longer and lower, the way it sits on the opposite edge. */
+.phone__frame::after {
+  content: '';
+  position: absolute;
+  right: -1.5px;
+  top: 27%;
+  width: 2px;
+  height: 8%;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(270deg, oklch(0.46 0.010 260), oklch(0.30 0.010 260));
+}
+
+.phone__screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--frame-radius) - var(--frame-pad));
+  background: oklch(0.16 0.010 260);
+  box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.6);
+  overflow: hidden;
+}
+
+/* The diagonal sheen across the glass. Very low opacity — at anything more
+   it stops reading as a reflection and starts reading as a gradient. */
+.phone__screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(118deg, oklch(1 0 0 / 0.16) 0%, oklch(1 0 0 / 0.04) 26%, transparent 46%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* A labelled empty state, not a fabricated app UI. A real screenshot drops
+   in here and immediately becomes the brightest thing on the page. */
+.phone__placeholder {
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+  letter-spacing: var(--t-micro-ls);
+  text-transform: uppercase;
+}
+
+.phone__caption { margin: var(--space-3) 0 0; text-align: center; color: var(--text-3); font-size: var(--t-body-sm-size); }
+
+/* ── Sections ───────────────────────────────────────────────────────────── */
+
+.section { padding-block: var(--space-8); content-visibility: auto; contain-intrinsic-size: auto 640px; }
+@media (min-width: 768px) { .section { padding-block: var(--space-9); } }
+
+/* A hero is never skipped by content-visibility — it is the first paint.
+   It keeps the section's own padding: zeroing it here used to flatten every
+   hero that carried .hero-wrap too, because this rule sits later in the file
+   and won on order. The wrapper re-declares its rhythm with a compound
+   selector below so the two no longer race. */
+.section--hero { content-visibility: visible; contain-intrinsic-size: none; }
+
+.band { background: linear-gradient(180deg, var(--bg-1), var(--bg-0)); border-block: var(--border-hairline) solid var(--line); }
+
+/* Full-bleed children (the testimonial rail) are wider than the container by
+   the scrollbar's width. `clip` rather than `hidden`: `hidden` on one axis
+   makes the other axis a scroll container, which would break sticky. */
+.section--bleed { overflow-x: clip; }
+.band--blue { background: linear-gradient(180deg, var(--blue-50), var(--bg-0)); }
+
+.section__head { max-width: 62ch; margin-bottom: var(--space-7); }
+.section__head--center { margin-inline: auto; text-align: center; }
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--brand-soft);
+  color: var(--blue-700);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--t-micro-ls);
+  text-transform: uppercase;
+}
+
+.section__title {
+  margin: 0;
+  font-size: clamp(1.875rem, 3.6vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  font-weight: var(--weight-extrabold);
+  color: var(--text-1);
+  text-wrap: balance;
+}
+
+.section__lede { margin: var(--space-4) 0 0; color: var(--text-2); font-size: var(--t-body-lg-size); text-wrap: pretty; }
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  padding: var(--space-6);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card--interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--blue-200);
+  }
+}
+
+.card__icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-5);
+  border-radius: 15px;
+  background: var(--grad-brand);
+  box-shadow: var(--shadow-brand);
+  color: #fff;
+}
+
+.card__title { margin: 0 0 var(--space-3); font-size: 1.25rem; letter-spacing: -0.02em; font-weight: var(--weight-bold); color: var(--text-1); }
+.card__body { margin: 0; color: var(--text-2); font-size: var(--t-body-sm-size); line-height: var(--t-body-lh); }
+
+.card__list { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; gap: var(--space-3); }
+.card__list li { display: flex; gap: var(--space-3); align-items: flex-start; color: var(--text-2); font-size: var(--t-body-sm-size); }
+.card__list svg { flex: 0 0 auto; margin-top: 3px; color: var(--brand); }
+
+.grid { display: grid; gap: var(--space-5); }
+@media (min-width: 780px) { .grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 720px) { .grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* ── Stats ──────────────────────────────────────────────────────────────── */
+
+.stat {
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--bg-2);
+  border: var(--border-hairline) solid var(--line);
+  box-shadow: var(--shadow-xs);
+  text-align: center;
+}
+
+.stat__value {
+  display: block;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: var(--weight-extrabold);
+  font-variant-numeric: tabular-nums;
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.stat__label { display: block; margin-top: var(--space-3); color: var(--text-3); font-size: var(--t-body-sm-size); font-weight: var(--weight-medium); }
+
+/* An honest marker while the real figure is missing — a visible gap beats an
+   invented number a visitor can disprove. */
+.stat[data-placeholder='true'] .stat__value { background: none; color: var(--text-3); }
+
+/* ── Work ───────────────────────────────────────────────────────────────── */
+
+.work-card { display: block; text-decoration: none; overflow: hidden; padding: 0; }
+.work-card[data-placeholder='true'] { border-style: dashed; }
+
+.work-card__media {
+  aspect-ratio: 16 / 10;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, var(--blue-100), var(--blue-50) 55%, var(--bg-2));
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+  letter-spacing: var(--t-micro-ls);
+  text-transform: uppercase;
+}
+
+.work-card__body { padding: var(--space-6); }
+.work-card__industry { display: block; margin-bottom: var(--space-2); color: var(--brand); font-size: var(--t-micro-size); font-weight: var(--weight-bold); letter-spacing: var(--t-micro-ls); text-transform: uppercase; }
+.work-card__client { margin: 0 0 var(--space-3); font-size: 1.25rem; letter-spacing: -0.02em; font-weight: var(--weight-bold); color: var(--text-1); }
+.work-card__summary { margin: 0 0 var(--space-4); color: var(--text-2); font-size: var(--t-body-sm-size); }
+.work-card__result { margin: 0; padding-top: var(--space-4); border-top: var(--border-hairline) solid var(--line); color: var(--text-1); font-weight: var(--weight-semibold); font-size: var(--t-body-sm-size); }
+
+.tags { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px var(--space-3);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--bg-2);
+  color: var(--text-1);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-semibold);
+}
+
+/* A tag carrying a brand mark reads as the product, not as a keyword, so it
+   gets a white ground and the mark keeps its own colour. */
+.tag[data-marked='false'] { background: var(--brand-soft); border-color: transparent; color: var(--blue-700); }
+.tag__mark { flex: none; }
+
+/* ── Process ────────────────────────────────────────────────────────────── */
+
+/* An ordered list, and the order is the information: this is the sequence a
+   project actually runs in, so the numbering carries meaning. */
+.process { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-5); counter-reset: step; }
+@media (min-width: 900px) { .process { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.step { position: relative; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--bg-2); border: var(--border-hairline) solid var(--line); box-shadow: var(--shadow-xs); counter-increment: step; }
+
+.step__index {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--grad-brand);
+  color: #fff;
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.step__index::before { content: counter(step, decimal-leading-zero); }
+
+.step__title { margin: 0 0 var(--space-2); font-size: 1.125rem; font-weight: var(--weight-bold); color: var(--text-1); }
+.step__body { margin: 0; color: var(--text-2); font-size: var(--t-body-sm-size); line-height: var(--t-body-lh); }
+.step__duration { display: inline-block; margin-top: var(--space-4); padding: 3px var(--space-3); border-radius: var(--radius-full); background: var(--bg-3); color: var(--text-3); font-size: var(--t-micro-size); font-weight: var(--weight-semibold); }
+
+/* ── Stack ──────────────────────────────────────────────────────────────── */
+
+.stack-group { padding: var(--space-5) 0; border-top: var(--border-hairline) solid var(--line); display: grid; gap: var(--space-3); }
+@media (min-width: 720px) { .stack-group { grid-template-columns: 190px minmax(0, 1fr); align-items: center; gap: var(--space-5); } }
+.stack-group__name { color: var(--text-1); font-weight: var(--weight-bold); }
+
+/* ── R&D panel ──────────────────────────────────────────────────────────── */
+
+.rnd { display: grid; gap: var(--space-6); align-items: center; }
+@media (min-width: 900px) { .rnd { grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-8); } }
+
+.panel-frame { padding: var(--space-4); border: var(--border-hairline) solid var(--line); border-radius: var(--radius-xl); background: var(--bg-2); box-shadow: var(--shadow-md); }
+.panel-canvas { display: block; width: 100%; height: auto; aspect-ratio: 128 / 64; border-radius: var(--radius-md); image-rendering: pixelated; }
+.panel-hud { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: space-between; margin-top: var(--space-3); }
+.panel-hud__label, .panel-hud__idle { color: var(--text-3); }
+.panel-hud__stats { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--t-micro-size); }
+.panel-stat { display: inline-flex; align-items: baseline; gap: 0.35em; }
+.panel-stat__value { color: var(--brand); font-weight: var(--weight-bold); font-variant-numeric: tabular-nums; }
+.panel-stat__unit { color: var(--text-3); }
+
+/* ── Closing CTA ────────────────────────────────────────────────────────── */
+
+.cta-band {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-9) var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--grad-brand);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  color: #fff;
+}
+
+.cta-band::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 80% at 80% 10%, oklch(1 0 0 / 0.18), transparent 70%);
+  pointer-events: none;
+}
+
+.cta-band > * { position: relative; }
+.cta-band__title { margin: 0 auto; max-width: 20ch; font-size: clamp(1.75rem, 3.4vw, 2.5rem); line-height: 1.12; letter-spacing: -0.035em; font-weight: var(--weight-extrabold); text-wrap: balance; }
+.cta-band__lede { margin: var(--space-4) auto 0; max-width: 50ch; color: oklch(1 0 0 / 0.92); }
+.cta-band__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; margin-top: var(--space-6); }
+.cta-band .btn--primary { background: #fff; color: var(--blue-700); box-shadow: var(--shadow-md); }
+.cta-band .btn--secondary { background: oklch(1 0 0 / 0.14); border-color: oklch(1 0 0 / 0.35); color: #fff; }
+
+@media (hover: hover) and (pointer: fine) {
+  .cta-band .btn--primary:hover { background: var(--blue-50); }
+  .cta-band .btn--secondary:hover { background: oklch(1 0 0 / 0.22); border-color: oklch(1 0 0 / 0.5); }
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+
+.footer { border-top: var(--border-hairline) solid var(--line); padding-block: var(--space-7); color: var(--text-3); font-size: var(--t-body-sm-size); background: var(--bg-1); }
+.footer__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+
+/* ── Placeholder notice ─────────────────────────────────────────────────── */
+
+.notice {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  border: var(--border-hairline) dashed var(--blue-300);
+  border-radius: var(--radius-lg);
+  background: var(--brand-soft);
+  color: var(--blue-800);
+  font-size: var(--t-body-sm-size);
+}

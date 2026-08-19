@@ -1,0 +1,200 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   wlans · design tokens · SCALE
+   Spacing, radius, layout, and the type scale mechanics.
+
+   Family-agnostic on purpose: font families and the colour palette land only
+   once the visual direction is chosen (see docs/01-design-system.md).
+   Everything here holds regardless of that decision.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Spacing ───────────────────────────────────────────────────────────
+     4px base. Non-linear at the top because layout rhythm needs big jumps
+     between sections but fine control inside components. Expressed in rem
+     so the layout scales with the user's text-size setting rather than
+     breaking when they enlarge it. */
+  --space-0:  0;
+  --space-1:  0.25rem;  /*  4px  icon gap                    */
+  --space-2:  0.5rem;   /*  8px  tight inline                */
+  --space-3:  0.75rem;  /* 12px  control padding             */
+  --space-4:  1rem;     /* 16px  default                     */
+  --space-5:  1.5rem;   /* 24px  card padding                */
+  --space-6:  2rem;     /* 32px  group separation            */
+  --space-7:  3rem;     /* 48px  block separation            */
+  --space-8:  4rem;     /* 64px  section padding (mobile)    */
+  --space-9:  6rem;     /* 96px  section padding (desktop)   */
+  --space-10: 8rem;     /* 128px major section break         */
+
+  /* ── Radius ────────────────────────────────────────────────────────────
+     Deliberately tight. Large radii read friendly and consumer; small radii
+     read precise and instrument-grade, which is the register this brand
+     needs. `--radius-full` exists only for avatars and status dots. */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-full: 999px;
+
+  /* ── Border ────────────────────────────────────────────────────────────
+     Hairlines stay 1px at every density. A 1px line that becomes 2px on a
+     retina display is the classic tell of an unconsidered interface. */
+  --border-hairline: 1px;
+
+  /* ── Layout ────────────────────────────────────────────────────────────
+     Two container widths, not one. Prose has a hard measure limit because
+     line length, not viewport width, governs readability. */
+  --width-prose:   68ch;   /* docs body — 65-75ch is the readable band */
+  --width-content: 1200px; /* marketing sections                       */
+  --width-wide:    1440px; /* full-bleed showcase, playground          */
+  --gutter:        var(--space-5);
+  --gutter-lg:     var(--space-7);
+
+  /* ── Type scale ────────────────────────────────────────────────────────
+     Size, leading, and tracking are declared as a SET per step.
+
+     A single global `letter-spacing` is wrong somewhere by definition:
+     large text needs negative tracking (letters drift apart as they grow),
+     small text needs slightly positive tracking to stay legible. Leading
+     moves inversely to size — tight on display, loose on body.
+
+     Display sizes use clamp() so they scale continuously rather than
+     jumping at breakpoints. */
+
+  /* display — hero only, one per page */
+  --t-display-size:   clamp(2.5rem, 6vw, 4.5rem);
+  --t-display-lh:     1.02;
+  --t-display-ls:     -0.035em;
+  --t-display-weight: 600;
+
+  /* h1 — page title */
+  --t-h1-size:   clamp(2rem, 4vw, 3rem);
+  --t-h1-lh:     1.08;
+  --t-h1-ls:     -0.028em;
+  --t-h1-weight: 600;
+
+  /* h2 — section */
+  --t-h2-size:   clamp(1.5rem, 2.5vw, 2rem);
+  --t-h2-lh:     1.15;
+  --t-h2-ls:     -0.02em;
+  --t-h2-weight: 600;
+
+  /* h3 — subsection */
+  --t-h3-size:   1.25rem;
+  --t-h3-lh:     1.3;
+  --t-h3-ls:     -0.012em;
+  --t-h3-weight: 600;
+
+  /* body-lg — lede paragraph */
+  --t-body-lg-size: 1.125rem;
+  --t-body-lg-lh:   1.6;
+  --t-body-lg-ls:   -0.005em;
+
+  /* body — default. 16px floor: below it iOS Safari zooms on input focus. */
+  --t-body-size: 1rem;
+  --t-body-lh:   1.6;
+  --t-body-ls:   0;
+
+  /* body-sm — secondary copy, captions */
+  --t-body-sm-size: 0.875rem;
+  --t-body-sm-lh:   1.55;
+  --t-body-sm-ls:   0.003em;
+
+  /* label — UI chrome, buttons, form labels */
+  --t-label-size:   0.875rem;
+  --t-label-lh:     1.2;
+  --t-label-ls:     0.005em;
+  --t-label-weight: 500;
+
+  /* mono — code, pin names, register values, measurements */
+  --t-mono-size: 0.875rem;
+  --t-mono-lh:   1.65;
+  --t-mono-ls:   0;
+
+  /* micro — overline / eyebrow. Positive tracking is doing the work here;
+     at this size it is what separates "deliberate" from "cramped". */
+  --t-micro-size:   0.75rem;
+  --t-micro-lh:     1.4;
+  --t-micro-ls:     0.08em;
+  --t-micro-weight: 500;
+
+  /* ── Z-index ───────────────────────────────────────────────────────────
+     Named, finite, and centralised. Ad-hoc z-index values are how stacking
+     bugs get shipped. */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-sticky:   100;
+  --z-header:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+}
+
+/* ── Density ────────────────────────────────────────────────────────────
+   Marketing pages breathe; the playground and docs sidebar are dense.
+   Same tokens, one opt-in override — not a second scale to keep in sync. */
+[data-density='compact'] {
+  --space-5: 1rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --space-9: 3rem;
+}
+
+/* ── Type helpers ───────────────────────────────────────────────────────
+   Applying a step means applying all three properties. These exist so a
+   component can never take the size and silently drop the tracking. */
+.t-display {
+  font-size: var(--t-display-size);
+  line-height: var(--t-display-lh);
+  letter-spacing: var(--t-display-ls);
+  font-weight: var(--t-display-weight);
+  font-optical-sizing: auto;
+  text-wrap: balance;
+}
+.t-h1 {
+  font-size: var(--t-h1-size);
+  line-height: var(--t-h1-lh);
+  letter-spacing: var(--t-h1-ls);
+  font-weight: var(--t-h1-weight);
+  text-wrap: balance;
+}
+.t-h2 {
+  font-size: var(--t-h2-size);
+  line-height: var(--t-h2-lh);
+  letter-spacing: var(--t-h2-ls);
+  font-weight: var(--t-h2-weight);
+  text-wrap: balance;
+}
+.t-h3 {
+  font-size: var(--t-h3-size);
+  line-height: var(--t-h3-lh);
+  letter-spacing: var(--t-h3-ls);
+  font-weight: var(--t-h3-weight);
+}
+.t-body {
+  font-size: var(--t-body-size);
+  line-height: var(--t-body-lh);
+  letter-spacing: var(--t-body-ls);
+  text-wrap: pretty; /* kills orphans without the reflow cost of balance */
+}
+.t-micro {
+  font-size: var(--t-micro-size);
+  line-height: var(--t-micro-lh);
+  letter-spacing: var(--t-micro-ls);
+  font-weight: var(--t-micro-weight);
+  text-transform: uppercase;
+}
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-size);
+  line-height: var(--t-mono-lh);
+  letter-spacing: var(--t-mono-ls);
+  font-variant-numeric: tabular-nums; /* numbers must not jitter as they change */
+}
+
+/* Any element showing a live changing number — FPS, byte count, flush time —
+   must use tabular figures or the layout twitches on every update. */
+.u-tabular {
+  font-variant-numeric: tabular-nums;
+}

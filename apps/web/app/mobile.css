@@ -1,0 +1,687 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Mobile app shell.
+
+   Below 900px this stops behaving like a narrow website and starts behaving
+   like an application: a compact app bar at the top, a persistent tab bar at
+   the bottom, sheets instead of dropdowns, horizontal card rails instead of
+   stacked grids, and press states instead of hover states.
+
+   Everything here is scoped to a media query. Nothing in this file changes
+   the desktop layout.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --tabbar-height: 60px;
+  --appbar-height: 56px;
+  /* Zero on a device without a home indicator, ~34px on a modern iPhone. */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* ── Touch ergonomics ───────────────────────────────────────────────────── */
+
+@media (hover: none) {
+  /* The 300ms grey flash on tap is the clearest tell that something is a web
+     page. Removing it means every interactive element must supply its own
+     press state — they do, below. */
+  a,
+  button,
+  [role='tab'],
+  .chip,
+  .card,
+  .tag {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Press feedback replaces hover wholesale. 60ms in, so it registers as a
+     response to the finger rather than as an animation. */
+  a:active,
+  button:not(:disabled):active {
+    transition: transform 60ms var(--ease-out);
+  }
+
+  .card:active,
+  .showcase-card:active,
+  .tabbar__item:active { transform: scale(0.98); }
+
+  /* A rubber-band bounce that scrolls the page behind a sheet or a rail is
+     the other obvious tell. */
+  body { overscroll-behavior-y: contain; }
+}
+
+/* ── App bar ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  /* Flush with the page at rest, separated once content passes under it. */
+  .header {
+    padding-top: var(--safe-top);
+    border-bottom-color: transparent;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+
+  .header[data-scrolled='true'] { border-bottom-color: var(--line); }
+
+  .header__inner { height: var(--appbar-height); gap: var(--space-3); }
+
+  .header__brand { font-size: 1.0625rem; }
+  .header__mark { width: 27px; height: 27px; border-radius: 8px; }
+
+  /* Back replaces the wordmark's leading position on a detail page, the way
+     a native stack navigator does. */
+  .header__back {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-left: calc(var(--space-3) * -1);
+    border-radius: var(--radius-full);
+    color: var(--text-1);
+    text-decoration: none;
+  }
+
+  .header__back:active { background: var(--bg-3); }
+  .header__brand[data-has-back='true'] .header__mark { display: none; }
+
+  .header__phone { display: none; }
+}
+
+@media (min-width: 900px) {
+  .header__back { display: none; }
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────────── */
+
+.tabbar { display: none; }
+
+@media (max-width: 899px) {
+  .tabbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-header);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    align-items: stretch;
+    height: calc(var(--tabbar-height) + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    background: oklch(1 0 0 / 0.86);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-top: var(--border-hairline) solid var(--line);
+  }
+
+  [data-theme='dark'] .tabbar { background: oklch(0.19 0.02 263 / 0.86); }
+
+  .tabbar__item {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 3px;
+    color: var(--text-3);
+    text-decoration: none;
+    /* No transition on the icon: a tab should feel switched, not animated. */
+    transition: color var(--dur-instant) var(--ease-out);
+  }
+
+  .tabbar__item[data-active='true'] { color: var(--brand); }
+
+  /* The active pill sits behind the icon, not behind icon+label — a full-height
+     pill in a 60px bar reads as a button, not as a selected tab. */
+  .tabbar__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+
+  .tabbar__item[data-active='true'] .tabbar__icon { background: var(--brand-soft); }
+
+  .tabbar__label {
+    font-size: 0.6875rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  /* On body, not main: the footer comes after main and would otherwise sit
+     underneath the fixed bar. */
+  body { padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom)); }
+
+  /* The footer duplicates the tab bar on a phone. Keep the legal line, drop
+     the nav. */
+  .footer__inner nav { display: none; }
+  .footer { padding-block: var(--space-5); text-align: center; }
+}
+
+/* ── Section rhythm ─────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  /* App screens are dense at the edges and generous between blocks. Tighter
+     gutters, but the same vertical separation, so sections still read as
+     separate screens' worth of content. */
+  :root { --gutter: 1rem; }
+
+  .section { padding-block: var(--space-7); }
+  .section.hero-wrap { padding-block: var(--space-5) var(--space-7); }
+  .section.hero-wrap--compact { padding-block: var(--space-4) var(--space-6); }
+
+  .section__head { margin-bottom: var(--space-5); }
+  .section__title { font-size: clamp(1.5rem, 6.4vw, 2rem); letter-spacing: -0.03em; }
+  .section__lede { font-size: var(--t-body-sm-size); }
+
+  .eyebrow { font-size: 0.6875rem; }
+}
+
+/* ── Hero ───────────────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .hero__title { font-size: clamp(2rem, 9vw, 2.75rem); line-height: 1.06; }
+  .hero__lede { font-size: var(--t-body-size); }
+
+  /* Full-width primary action, the way an app puts its one obvious next step
+     across the bottom of the screen. */
+  .hero__actions { display: grid; gap: var(--space-3); }
+  .hero__actions .btn--lg { width: 100%; justify-content: center; }
+  .hero__actions .video-cta { justify-content: center; }
+
+  .hero__trust { gap: var(--space-2); }
+  .hero__trust-item { font-size: var(--t-micro-size); }
+
+  /* A swipeable strip that peeks past the right edge rather than three
+     shrunken phones squeezed to fit. It scrolls instead of overflowing: a
+     fixed-width row this wide would give the whole page a horizontal
+     scrollbar. */
+  .hero__devices {
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--space-4) var(--gutter);
+    justify-content: flex-start;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .hero__devices::-webkit-scrollbar { display: none; }
+  .hero__devices .phone { flex: none; width: 42vw; max-width: 190px; scroll-snap-align: center; }
+
+  /* Proportional chrome. A 7px bezel and a 34px corner are right on a 200px
+     device and cartoonish on a 150px one. */
+  .phone__frame {
+    --frame-pad: 5px;
+    --frame-radius: 24px;
+    --frame-button-top: 18px;
+  }
+
+  .phone__notch { min-height: 7px; }
+  .phone__notch::after { width: 4px; height: 4px; }
+}
+
+/* ── Grids become card rails ────────────────────────────────────────────── */
+
+/* A four-across grid stacked into four full-width blocks is the single most
+   website-like thing a narrow layout does. Horizontal snap rails with a peek
+   at the next card are how an app presents the same list — and the peek is
+   what tells the reader there is more. */
+@media (max-width: 899px) {
+  .grid--3,
+  .grid--4 {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    gap: var(--space-3);
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 4px var(--gutter) var(--space-4);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .grid--3::-webkit-scrollbar,
+  .grid--4::-webkit-scrollbar { display: none; }
+
+  .grid--3 > *,
+  .grid--4 > * { scroll-snap-align: start; }
+
+  /* The stat strip is the exception: four short numbers fit two-up and read
+     better as a block than as something to swipe. */
+  .grid--4:has(.stat) {
+    grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .service-card { padding: var(--space-4); }
+  .card { padding: var(--space-5); border-radius: var(--radius-lg); }
+}
+
+/* ── Filter chips → segmented control ───────────────────────────────────── */
+
+@media (max-width: 899px) {
+  /* One row that scrolls, never a wrapped block: a filter that reflows into
+     three rows pushes the results off the screen. */
+  .chips {
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    /* 44px, not 40: below the platform minimum a filter is a coin toss with
+       a thumb. */
+    --chip-height: 44px;
+  }
+
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; scroll-snap-align: center; padding-inline: var(--space-3); }
+}
+
+/* ── Project cards ──────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .showcase { gap: var(--space-4); }
+
+  .showcase-card {
+    padding: var(--space-5);
+    border-radius: var(--radius-xl);
+  }
+
+  /* The devices move under the copy rather than beside it, and stay inside
+     the card — a phone hanging off the edge of a card that is itself only
+     slightly wider than a phone reads as a mistake. */
+  .showcase-card { min-height: 0; }
+  .showcase-card__body { max-width: 100%; }
+  .showcase-card__title { font-size: 1.25rem; }
+
+  /* In flow, keyed off width rather than off `hover: none`. A narrow desktop
+     window is still a narrow card, and leaving the art absolute there put the
+     devices back on top of the summary. */
+  .showcase-card__art {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: 176px;
+    margin-top: var(--space-4);
+  }
+
+  /* Sized by the container's height, not by a percentage of the card's width:
+     with `aspect-ratio` doing the rest, a width-driven device inside a
+     fixed-height box overflows it by more than double. */
+  .showcase-card__phone {
+    width: auto;
+    height: 100%;
+    --frame-border: 3px;
+    --frame-radius: 15px;
+  }
+
+  .showcase-card__phone--front { right: 26%; bottom: 0; }
+  .showcase-card__phone--back { right: 50%; bottom: 10%; }
+
+  .stores { gap: var(--space-3); }
+
+  /* The quote stays — it is the point of the block — but capped at two lines
+     so the card keeps a predictable height. */
+  .showcase-card__voice { padding: var(--space-3); }
+  .showcase-card__voice em {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Touch has no hover, so the quote is always open and takes real space. */
+  .showcase-item { grid-template-rows: auto auto; }
+}
+
+/* ── Case study ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .case-facts { grid-template-columns: 1fr 1fr; gap: var(--space-4); padding: var(--space-4); }
+  .case-fact--wide { grid-column: 1 / -1; }
+  .case-prose { font-size: var(--t-body-size); }
+  .case-steps { gap: var(--space-3); }
+  .case-step { padding: var(--space-4); }
+  .case-quote { padding: var(--space-5); }
+  .case-quote__text { font-size: var(--t-body-size); }
+  .service-hero__title { font-size: clamp(1.875rem, 8vw, 2.5rem); }
+  /* 108px wide × 9:19.5 is 234px tall, which is what the box is sized for.
+     Setting a height without checking the ratio is how these got clipped. */
+  .service-hero__art { height: 250px; }
+  .service-hero__phone { width: 108px; --frame-border: 4px; --frame-radius: 18px; }
+}
+
+/* ── Forms ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  /* 16px minimum: anything smaller makes iOS Safari zoom the viewport on
+     focus, and the page never zooms back out. */
+  .input {
+    min-height: 50px;
+    font-size: 16px;
+    border-radius: var(--radius-lg);
+  }
+
+  .input--area { min-height: 140px; }
+  .form__row { display: grid; gap: var(--space-4); }
+  .form__row--3 { grid-template-columns: 1fr; }
+  .form__actions .btn { width: 100%; justify-content: center; }
+  .contact-form-card { padding: var(--space-5); }
+}
+
+/* ── Odds and ends ──────────────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  .cta-band { padding: var(--space-6) var(--space-5); border-radius: var(--radius-xl); }
+  .cta-band__title { font-size: clamp(1.375rem, 6vw, 1.75rem); }
+  .cta-band__actions { display: grid; gap: var(--space-3); width: 100%; }
+  .cta-band__actions .btn { width: 100%; justify-content: center; }
+
+  .rail__card { flex: 0 0 82vw; }
+
+  .notice { font-size: var(--t-micro-size); }
+
+  /* Anchored jumps must clear the sticky app bar. */
+  :target { scroll-margin-top: calc(var(--appbar-height) + var(--safe-top) + var(--space-3)); }
+}
+
+/* ── Floating contact action ────────────────────────────────────────────── */
+
+/* Present on every page, so it must never be the thing covering the content
+   it floats over: it sits above the tab bar on a phone, below the navigation
+   sheet in z-order, and out of the way of the footer on a desktop. */
+.fab {
+  position: fixed;
+  right: var(--gutter);
+  bottom: calc(var(--space-5) + var(--safe-bottom));
+  z-index: calc(var(--z-overlay) - 1);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 56px;
+  padding-inline: 18px;
+  border-radius: var(--radius-full);
+  background: var(--grad-brand);
+  box-shadow: 0 10px 28px oklch(0.546 0.215 263 / 0.42), 0 2px 6px oklch(0.32 0.115 263 / 0.24);
+  color: #fff;
+  font-size: var(--t-body-sm-size);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.fab__icon { display: grid; place-items: center; }
+
+@media (hover: hover) and (pointer: fine) {
+  .fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px oklch(0.546 0.215 263 / 0.5), 0 2px 6px oklch(0.32 0.115 263 / 0.24);
+  }
+}
+
+.fab:active { transform: scale(0.96); }
+
+@media (max-width: 899px) {
+  /* A circle on a phone: 56px is the full width of a thumb's comfortable
+     reach, and the label would compete with the tab bar directly under it. */
+  .fab {
+    width: 56px;
+    padding-inline: 0;
+    justify-content: center;
+    bottom: calc(var(--tabbar-height) + var(--safe-bottom) + var(--space-3));
+  }
+
+  .fab__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Hidden while the navigation sheet is open — a button floating over a modal
+   is a trap for a mis-tap. `:has` on the body because the sheet lives inside
+   the header and is not a sibling of the button. */
+
+@media (prefers-reduced-motion: reduce) {
+  .fab { transition: none; }
+}
+
+/* ── Focus and fixed chrome ─────────────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  html {
+    scroll-padding-top: calc(var(--appbar-height) + var(--safe-top) + var(--space-3));
+    /* The tab bar is fixed, so a focused control scrolled to the bottom of the
+       viewport lands underneath it without this. */
+    scroll-padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + var(--space-3));
+  }
+}
+
+/* The floating button must not sit on top of a footer link on a desktop, where
+   the footer is the last thing on the page and the button never moves. */
+@media (min-width: 900px) {
+  .footer { padding-bottom: calc(var(--space-7) + 56px); }
+}
+
+/* ── Landscape phones ───────────────────────────────────────────────────── */
+
+/* A 60px tab bar plus a 56px app bar takes a third of the height of a phone
+   held sideways. Drop the labels and tighten both bars rather than letting the
+   content strip shrink to nothing. */
+@media (max-width: 899px) and (max-height: 480px) and (orientation: landscape) {
+  :root { --tabbar-height: 46px; --appbar-height: 46px; }
+  .tabbar__label { display: none; }
+  .tabbar__icon { height: 30px; }
+  .section { padding-block: var(--space-6); }
+}
+
+/* ── Section seams ──────────────────────────────────────────────────────── */
+
+/* On a wide screen an alternating band is a whole viewport tall and reads as
+   one continuous surface. On a phone the same band is three screens tall, so
+   its gradient runs out early and what is left is a hard colour edge plus two
+   hairlines — the page stops flowing and starts looking like separate pages
+   stitched together.
+
+   Both seams go: the borders are dropped, and the tint fades in at the top and
+   out at the bottom instead of starting and stopping abruptly. The grouping is
+   still there, just without an edge to notice. */
+@media (max-width: 899px) {
+  .band {
+    border-block: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--bg-1) 14%,
+      var(--bg-1) 70%,
+      transparent 100%
+    );
+  }
+
+  .band--blue {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      var(--blue-50) 14%,
+      var(--blue-50) 70%,
+      transparent 100%
+    );
+  }
+
+  /* Two bands in a row would fade to nothing and back for no reason; when they
+     touch, hold the tint through the join. */
+  .band + .band { background: var(--bg-1); }
+  .band + .band--blue { background: var(--blue-50); }
+
+  /* The hero already fades into the page; ending it on a line undoes that. */
+  .hero-wrap { border-bottom: 0; }
+}
+
+/* ── Language, always in the app bar ────────────────────────────────────── */
+
+@media (max-width: 899px) {
+  /* The one control that has to be reachable from every screen: a reader who
+     landed on the wrong language should never have to navigate to fix it.
+     Compact, but each option still clears the 44px target with its padding. */
+  .locale-switcher {
+    gap: 0;
+    padding: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .locale-switcher__option {
+    min-width: 34px;
+    padding: 10px 6px;
+    text-align: center;
+    font-size: 0.6875rem;
+  }
+
+  /* The breadcrumb is what the back button in the bar already says, and it
+     costs a whole line above the title on a screen that has none to spare. */
+  .crumbs { display: none; }
+}
+
+/* ── Service fan ────────────────────────────────────────────────────────── */
+
+/* Tapping Services opens the nine detail pages as an arc above the bar rather
+   than navigating to an index page first. The positions come from the
+   component (`--fan-x` / `--fan-y` per item); this file only animates them.
+
+   Everything is `transform` and `opacity`, so nine items arriving at once
+   stays on the compositor. */
+.fan {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-header) - 1);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.fan[data-open='true'] { visibility: visible; pointer-events: auto; }
+
+@media (min-width: 900px) {
+  .fan { display: none; }
+}
+
+.fan__scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: oklch(0.2 0.02 263 / 0.34);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  cursor: default;
+}
+
+.fan[data-open='true'] .fan__scrim { opacity: 1; }
+
+/* The origin: items fly out from the middle of the tab bar, which is where
+   the finger just was. */
+.fan__items {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--tabbar-height) + var(--safe-bottom));
+  width: min(100%, 460px);
+  height: 0;
+  translate: -50% 0;
+}
+
+.fan__item {
+  position: absolute;
+  left: calc(50% + var(--fan-x));
+  bottom: var(--fan-y);
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  width: 66px;
+  translate: -50% 0;
+  color: #fff;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(28px) scale(0.6);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.fan[data-open='true'] .fan__item {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity var(--dur-base) var(--ease-out) var(--fan-delay),
+    transform var(--dur-slow) var(--ease-out) var(--fan-delay);
+}
+
+.fan__bubble {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-full);
+  background: var(--bg-2);
+  box-shadow: 0 8px 20px oklch(0.2 0.02 263 / 0.32);
+  color: var(--brand);
+}
+
+.fan__item:active .fan__bubble { transform: scale(0.92); }
+
+.fan__label {
+  font-size: 0.6875rem;
+  font-weight: var(--weight-bold);
+  line-height: 1.15;
+  text-align: center;
+  text-shadow: 0 1px 3px oklch(0.2 0.02 263 / 0.5);
+}
+
+/* The index page is still one tap away, parked under the arc. */
+.fan__all {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--tabbar-height) + var(--safe-bottom) + var(--space-4));
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  background: oklch(1 0 0 / 0.16);
+  border: var(--border-hairline) solid oklch(1 0 0 / 0.3);
+  color: #fff;
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  translate: -50% 0;
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.fan[data-open='true'] .fan__all { opacity: 1; transition-delay: 120ms; }
+
+/* The floating button would sit on top of the arc. */
+body:has(.fan[data-open='true']) .fab { opacity: 0; visibility: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fan__item,
+  .fan[data-open='true'] .fan__item,
+  .fan__scrim,
+  .fan__all { transition-duration: 1ms; transition-delay: 0s; transform: none; }
+}
+
+/* The page behind an open fan must not scroll — a scrim you can scroll past
+   is the clearest sign a layer is fake. */
+body:has(.fan[data-open='true']) { overflow: hidden; }

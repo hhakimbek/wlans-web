@@ -1,0 +1,18 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   wlans · design tokens
+   Single entry point. `apps/web` imports only this file.
+
+   Import order is load-bearing:
+     1. scale       — spacing, radius, type scale (no dependencies)
+     2. color       — surfaces, text, signal (uses --radius-* in :focus-visible)
+     3. typography  — families and prose (uses --text-*, --line-*, --space-*)
+     4. motion      — durations, tiers, materials (uses nothing; read by all)
+
+   Direction A — "Signal", chosen in Phase 2.
+   Contrast and gamut are machine-verified: `python contrast-check.py`.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@import './scale.css';
+@import './color.css';
+@import './typography.css';
+@import './motion.css';

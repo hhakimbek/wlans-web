@@ -1,0 +1,976 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Component styles, part 3 — mega menu, mobile nav, project showcase,
+   testimonial rail, service detail pages, and the video dialog fix.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Video dialog: centring fix ──────────────────────────────────────────
+   The earlier rule set a width but no positioning, so the dialog inherited
+   whatever the user agent defaulted to and sat near the top of the viewport.
+   A modal dialog needs `position: fixed; inset: 0; margin: auto` to actually
+   centre in the top layer. `overflow: visible` lets the close button hang
+   outside the panel. */
+.video-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(1100px, 92vw);
+  max-width: 92vw;
+  max-height: 88dvh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.video-dialog::backdrop {
+  background: oklch(0.16 0.03 263 / 0.78);
+  backdrop-filter: blur(8px);
+  animation: dialog-fade var(--dur-base) var(--ease-out);
+}
+
+/* Enters from slightly below and under-scale — never from scale(0), because
+   nothing in the physical world appears out of nothing. */
+.video-dialog[open] .video-dialog__panel {
+  animation: dialog-in var(--dur-slow) var(--ease-out);
+}
+
+@keyframes dialog-fade {
+  from { opacity: 0; }
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-dialog[open] .video-dialog__panel { animation: none; }
+  .video-dialog::backdrop { animation: none; }
+}
+
+.video-dialog__frame {
+  border: 6px solid oklch(1 0 0 / 0.1);
+  box-shadow: 0 40px 90px oklch(0 0 0 / 0.5);
+}
+
+.video-dialog__caption {
+  margin: var(--space-4) 0 0;
+  text-align: center;
+  color: oklch(1 0 0 / 0.75);
+  font-size: var(--t-body-sm-size);
+}
+
+/* ── Header: mega menu ──────────────────────────────────────────────────── */
+
+.header__mega-wrap { position: relative; }
+
+.header__link--trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  font-family: inherit;
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+
+.header__link--trigger[data-open='true'] { color: var(--brand); background: var(--nav-surface); }
+.header__link--trigger svg { transition: transform var(--dur-fast) var(--ease-out); }
+.header__link--trigger[data-open='true'] svg { transform: rotate(180deg); }
+
+/* Anchored under its trigger — `.header__mega-wrap` is the containing block —
+   and only as wide as the five items need. */
+.mega {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  z-index: var(--z-overlay);
+  width: min(360px, calc(100vw - 2 * var(--gutter)));
+  translate: -50% 0;
+  opacity: 0;
+  /* Origin at the top, under the trigger: the panel should read as unfolding
+     out of the button it belongs to, not as a box fading in mid-air. */
+  transform: translateY(-10px) scaleY(0.94) scaleX(0.985);
+  transform-origin: top center;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-in),
+    visibility 0s linear var(--dur-fast);
+}
+
+/* Enter is slower than exit and lands on --ease-out, which overshoots
+   slightly before settling. Exits are fast because nobody wants to wait for
+   a menu to leave. */
+.mega[data-open='true'] {
+  opacity: 1;
+  transform: translateY(0) scaleY(1) scaleX(1);
+  visibility: visible;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out),
+    visibility 0s;
+}
+
+/* The rows arrive after the panel has started opening, one column at a time.
+   The delay is on the group, not on 18 individual items: a per-item stagger
+   at this count reads as a wave and takes too long to finish. */
+.mega__group + .mega__group { margin-top: var(--space-2); }
+
+.mega__group {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.mega[data-open='true'] .mega__group { opacity: 1; transform: translateY(0); }
+.mega[data-open='true'] .mega__group:nth-child(1) { transition-delay: 60ms; }
+.mega[data-open='true'] .mega__group:nth-child(2) { transition-delay: 100ms; }
+
+.mega__foot {
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.mega[data-open='true'] .mega__foot { opacity: 1; transition-delay: 160ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mega,
+  .mega[data-open='true'],
+  .mega__group,
+  .mega__foot { transform: none; transition-duration: 1ms; transition-delay: 0s; }
+}
+
+/* An invisible bridge across the gap between trigger and panel, so the
+   pointer does not leave the hover area on the way down. */
+.mega::before {
+  content: '';
+  position: absolute;
+  inset: -14px 0 auto 0;
+  height: 14px;
+}
+
+/* Near-opaque, not glassy: at 88% the page headings behind the panel showed
+   through the menu labels. The heavier blur keeps the frosted read without
+   letting text collide. */
+.mega__panel {
+  --mega-surface: oklch(1 0 0 / 0.97);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--mega-surface);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+[data-theme='dark'] .mega__panel { --mega-surface: oklch(0.190 0.020 263 / 0.97); }
+
+/* One column, not two. The offer is four mobile services and one web service,
+   so a column per group left the second column with a single item and most of
+   the panel empty. Stacked, the labels read as section headers in a normal
+   menu and the panel is the size of its content. */
+.mega__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: var(--space-3);
+}
+.mega__group { display: grid; gap: 2px; align-content: start; }
+
+.mega__group-label {
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--t-micro-ls);
+  text-transform: uppercase;
+}
+
+.mega__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-1);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.mega__item strong { display: block; font-size: var(--t-body-sm-size); font-weight: var(--weight-bold); }
+.mega__item em { display: block; margin-top: 1px; font-style: normal; color: var(--text-3); font-size: var(--t-micro-size); }
+
+.mega__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mega__item:hover { background: var(--brand-soft); }
+  .mega__item:hover .mega__icon { background: var(--grad-brand); color: #fff; }
+}
+
+.mega__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-hairline) solid var(--line);
+  background: var(--bg-1);
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+}
+
+.mega__foot-link { color: var(--brand); font-weight: var(--weight-bold); text-decoration: none; }
+
+/* ── Project showcase ───────────────────────────────────────────────────── */
+
+/* start, not stretch: when one card opens its quote the grid row grows, and
+   a stretched sibling would grow with it for no reason. */
+.showcase { display: grid; align-items: start; gap: var(--space-5); }
+@media (min-width: 860px) { .showcase { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* The wrapper owns hover, so the card and the quote below it light up
+   together — the quote sits outside the card's box and moving the pointer
+   onto it must not read as leaving the card.
+
+   The quote row is in flow, not absolute: floating it over the grid put it
+   on top of the next row's card, and the section's `content-visibility:
+   auto` (which implies paint containment) clipped its bottom corners on the
+   last row. As a real row it pushes the cards below it down instead. */
+.showcase-item {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 0fr;
+  /* The one deliberate layout animation on the page: nothing else can grow a
+     row to its content height. Kept short and on ease-out so the reflow cost
+     lands in as few frames as possible. */
+  transition: grid-template-rows var(--dur-fast) var(--ease-out);
+}
+
+.showcase-item:hover, .showcase-item:focus-within { grid-template-rows: auto 1fr; z-index: 3; }
+
+/* min-height: 0 is what actually lets a grid row collapse below its content;
+   without it the row floors at the quote's intrinsic height. */
+.showcase-card__reveal { min-height: 0; overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase-item { transition: none; }
+}
+
+/* The card inverts to the brand colour on hover or focus, the devices lift
+   clear of its edges, and the client quote drops out below. Everything
+   animated is transform, opacity or background-color — nothing that
+   triggers layout.
+
+   overflow is visible, not hidden: the phones are supposed to break the
+   card's boundary on hover. The art block is inset far enough that nothing
+   spills at rest. */
+.showcase-card {
+  position: relative;
+  display: block;
+  min-height: 340px;
+  padding: var(--space-6);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+/* The brand fill is a layer that fades, not a `background` that swaps.
+   A gradient cannot be interpolated from a flat colour, so transitioning
+   `background` here snapped from white to blue in one frame while every
+   other property eased — which is exactly the hitch this hover had. */
+.showcase-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: var(--grad-brand);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.showcase-card[data-placeholder='true'] { border-style: dashed; }
+/* 52%, not 60%: the back device starts at ~60% of the card width and the
+   summary was running underneath it. */
+.showcase-card__body { position: relative; z-index: 1; max-width: 52%; }
+
+.showcase-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--bg-2);
+  color: var(--brand);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+
+.showcase-card__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-3);
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  font-weight: var(--weight-extrabold);
+  color: var(--text-1);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.showcase-card__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--grad-brand);
+  color: #fff;
+  font-size: 1rem;
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+
+.showcase-card__summary { margin: 0 0 var(--space-5); color: var(--text-2); font-size: var(--t-body-sm-size); line-height: 1.6; transition: color var(--dur-base) var(--ease-out); }
+.showcase-card__result { margin: var(--space-4) 0 0; color: var(--brand); font-size: var(--t-body-sm-size); font-weight: var(--weight-bold); transition: color var(--dur-base) var(--ease-out); }
+
+.stores { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+.store { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text-1); transition: color var(--dur-base) var(--ease-out); }
+.store em { display: block; font-style: normal; font-size: var(--t-micro-size); font-weight: var(--weight-semibold); }
+.store b { display: flex; align-items: center; gap: 3px; color: var(--warn); font-size: var(--t-micro-size); }
+
+/* Two devices, the back one peeking out — reads as a product shot rather
+   than a screenshot pasted into a box. */
+.showcase-card__art { position: absolute; right: 0; bottom: 0; z-index: 1; width: 44%; pointer-events: none; }
+
+/* The device shadow is its own layer (filter: drop-shadow) rather than a
+   box-shadow, so it follows the rotated silhouette instead of a rectangle
+   the phone no longer fills. It grows as the phone lifts — a shadow that
+   stays fixed while the object rises reads as a sticker, not a lift. */
+/* The chrome is variables, not literals: the same frame is drawn at 170px in
+   a hero and at 80px inside a card, and a 5px bezel that reads as a phone at
+   the first size reads as a picture frame at the second. */
+.showcase-card__phone {
+  --frame-border: 5px;
+  --frame-radius: 24px;
+  position: absolute;
+  display: block;
+  width: 62%;
+  aspect-ratio: 9 / 19.5;
+  border: var(--frame-border) solid oklch(0.28 0.02 260);
+  border-radius: var(--frame-radius);
+  overflow: hidden;
+  background: #fff;
+  filter: drop-shadow(0 12px 22px oklch(0.320 0.115 263 / 0.22));
+  /* transform only. Animating the drop-shadow alongside it re-rasterised the
+     blur every frame, which is what made the lift stutter on the way up. */
+  transition: transform var(--dur-slow) var(--ease-out);
+  backface-visibility: hidden;
+}
+
+.showcase-card__phone svg { display: block; width: 100%; height: 100%; }
+.showcase-card__phone--back { right: 28%; bottom: 20%; transform: rotate(-8deg) scale(0.92); opacity: 0.92; }
+.showcase-card__phone--front { right: 0; bottom: 0; }
+
+/* The quote is always in the DOM — findable by search, readable by a screen
+   reader — and only its transform and opacity change. It hangs BELOW the
+   card rather than over it, so the store ratings stay readable and
+   clickable while it is open. Absolute, not in flow, so revealing it never
+   reflows the grid. */
+.showcase-card__voice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--grad-brand);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+
+.showcase-card__avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: oklch(1 0 0 / 0.9);
+  color: var(--blue-700);
+  font-weight: var(--weight-bold);
+  font-size: 0.9rem;
+}
+
+.showcase-card__voice-text { min-width: 0; }
+.showcase-card__voice strong { display: block; color: #fff; font-size: var(--t-micro-size); font-weight: var(--weight-bold); }
+.showcase-card__voice em { display: block; margin-top: 2px; font-style: normal; color: oklch(1 0 0 / 0.85); font-size: var(--t-micro-size); line-height: 1.45; }
+
+.showcase-card__case {
+  flex: 0 0 auto;
+  padding: 8px var(--space-4);
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: var(--blue-700);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+
+/* Focus-within as well as hover: the same state has to be reachable from a
+   keyboard, and both the card and the quote are links, so either can take
+   focus. Everything keys off the wrapper — hovering the quote must not
+   un-invert the card it belongs to. */
+@media (hover: hover) and (pointer: fine) {
+  .showcase-item:hover .showcase-card,
+  .showcase-item:focus-within .showcase-card {
+    border-color: transparent;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+
+  .showcase-item:hover .showcase-card::before,
+  .showcase-item:focus-within .showcase-card::before { opacity: 1; }
+
+  .showcase-item:hover .showcase-card__title,
+  .showcase-item:hover .showcase-card__summary,
+  .showcase-item:hover .showcase-card__result,
+  .showcase-item:hover .store { color: #fff; }
+
+  .showcase-item:hover .showcase-card__tag { background: oklch(1 0 0 / 0.2); color: #fff; }
+  .showcase-item:hover .showcase-card__mark { background: #fff; color: var(--blue-700); }
+  .showcase-item:hover .store b { color: oklch(0.92 0.1 90); }
+
+  /* The devices break out of the card: up and out past the top-right
+     corner, with the back one fanning further so the two separate rather
+     than travelling as one block. */
+  /* Promoted only while the card is hovered — a standing will-change on every
+     device in the grid would hold a dozen layers for nothing. */
+  .showcase-item:hover .showcase-card__phone { will-change: transform; }
+
+  .showcase-item:hover .showcase-card__phone--front { transform: translate(9%, -38px) rotate(3deg); }
+  .showcase-item:hover .showcase-card__phone--back { transform: rotate(-13deg) scale(0.94) translate(-10%, -52px); }
+
+  .showcase-item:hover .showcase-card__voice,
+  .showcase-item:focus-within .showcase-card__voice { opacity: 1; transform: translateY(0); }
+}
+
+/* Touch has no hover, so the quote would never appear. Show it inline
+   instead of hiding content behind an interaction that cannot happen. */
+@media (hover: none) {
+  .showcase-card { min-height: 0; padding-bottom: var(--space-6); }
+  .showcase-card__body { max-width: 100%; }
+  .showcase-card__art { position: relative; right: auto; bottom: auto; width: 100%; height: 190px; margin-top: var(--space-5); }
+  /* Height-driven once the art is in flow. Keeping `width: 62%` here made the
+     device 2.2x taller than the box it sits in, which is what tore the frames
+     apart on a phone. */
+  .showcase-card__phone { width: auto; height: 100%; }
+  .showcase-card__phone--front { right: 26%; bottom: 0; }
+  .showcase-card__phone--back { right: 52%; bottom: 10%; }
+  .showcase-item { grid-template-rows: auto auto; }
+  .showcase-card__voice { opacity: 1; transform: none; }
+}
+
+/* ── Testimonial rail ───────────────────────────────────────────────────── */
+
+.rail-wrap { position: relative; }
+
+/* Full-bleed, and asymmetric on purpose.
+
+   The rail spans the whole width — a scroller that stops at the container edge
+   tells the reader the list ends there, when it does not. Its LEADING inset
+   matches the container exactly, so at rest the first card sits on the same
+   line as the heading above it. Its TRAILING inset is a short 40px, so
+   scrolling to the end parks the last card near the edge, which is itself the
+   signal that there is nothing more.
+
+   `100%` here is the section width, not `100vw`: the viewport unit includes
+   the scrollbar gutter, which pushed the first card ~7px out of alignment with
+   everything else on the page. */
+.rail {
+  --rail-end: 40px;
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-5);
+  padding: var(--space-2) var(--rail-end) var(--space-5) var(--rail-inset);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+/* Declared once on the wrapper and inherited by both children, so the strip
+   and its arrows can never drift apart. */
+.rail-wrap {
+  --rail-inset: max(var(--gutter), calc((100% - var(--width-content)) / 2 + var(--gutter)));
+}
+
+/* The arrows belong to the text column, not to the full-width strip. */
+.rail-wrap .rail__controls { padding-inline: var(--rail-inset); }
+
+.rail::-webkit-scrollbar { display: none; }
+
+.rail__card { flex: 0 0 min(320px, 82vw); scroll-snap-align: start; display: flex; flex-direction: column; }
+.rail__card--video { padding: 0; border: 0; background: transparent; box-shadow: none; }
+
+/* The video tile takes whatever height the quotes need rather than setting
+   it. With a 3/4 aspect ratio it was the tallest card in the rail and every
+   quote stretched to match, which is where the empty space came from. */
+.rail__card--video .video-thumb { aspect-ratio: auto; flex: 1; min-height: 220px; }
+.rail__video-label { margin: var(--space-3) 0 0; color: var(--text-3); font-size: var(--t-micro-size); }
+
+/* A quote is short. Capping the block keeps the row compact and pins the
+   attribution to the bottom of a predictable card. */
+.rail__card .testimonial__quote { margin-bottom: var(--space-4); }
+
+.rail__rating { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-3); }
+
+.rail__platform {
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--bg-3);
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+}
+
+.rail__controls { display: flex; gap: var(--space-3); margin-top: var(--space-4); }
+
+.rail__btn {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--bg-2);
+  color: var(--text-1);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-instant) var(--ease-out);
+}
+
+.rail__btn:active { transform: scale(0.94); }
+.rail__btn[disabled] { opacity: 0.35; cursor: default; }
+
+@media (hover: hover) and (pointer: fine) {
+  .rail__btn:not([disabled]):hover { border-color: var(--brand); color: var(--brand); }
+}
+
+/* ── Service detail page ────────────────────────────────────────────────── */
+
+.section.hero-wrap--compact { padding-block: var(--space-5) var(--space-7); }
+@media (min-width: 768px) { .section.hero-wrap--compact { padding-block: var(--space-6) var(--space-7); } }
+
+.hero-wrap--service {
+  background: linear-gradient(
+    180deg,
+    oklch(0.96 0.03 var(--page-hue, 263)),
+    var(--bg-0) 70%
+  );
+}
+
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); color: var(--text-3); font-size: var(--t-body-sm-size); }
+.crumbs a { color: var(--text-3); text-decoration: none; }
+.crumbs a:hover { color: var(--brand); }
+.crumbs [aria-current] { color: var(--brand); font-weight: var(--weight-semibold); }
+
+.service-hero { display: grid; gap: var(--space-7); align-items: center; }
+@media (min-width: 980px) { .service-hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: var(--space-8); } }
+
+.service-hero__title {
+  margin: 0;
+  max-width: 15ch;
+  font-size: clamp(2.25rem, 5.2vw, 3.75rem);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  font-weight: var(--weight-extrabold);
+  color: var(--text-1);
+  text-wrap: balance;
+}
+
+.service-hero__lede { margin: var(--space-5) 0 0; max-width: 56ch; color: var(--text-2); font-size: var(--t-body-lg-size); line-height: 1.65; text-wrap: pretty; }
+
+.service-hero__points { list-style: none; display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); margin: var(--space-5) 0 0; padding: 0; }
+.service-hero__points li { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text-2); font-size: var(--t-body-sm-size); font-weight: var(--weight-semibold); }
+.service-hero__points svg { color: var(--brand); }
+
+.service-hero__art { position: relative; height: 380px; }
+@media (max-width: 979px) { .service-hero__art { height: 300px; } }
+
+.service-hero__phone {
+  --frame-border: 6px;
+  --frame-radius: 26px;
+  position: absolute;
+  display: block;
+  width: 168px;
+  aspect-ratio: 9 / 19.5;
+  border: var(--frame-border) solid oklch(0.26 0.02 260);
+  border-radius: var(--frame-radius);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+}
+
+.service-hero__phone svg { display: block; width: 100%; height: 100%; }
+.service-hero__phone--left { left: 2%; top: 12%; transform: rotate(-8deg) scale(0.88); z-index: 1; }
+.service-hero__phone--mid { left: 50%; top: 0; translate: -50% 0; z-index: 3; }
+.service-hero__phone--right { right: 2%; top: 12%; transform: rotate(8deg) scale(0.88); z-index: 2; }
+
+@media (max-width: 979px) {
+  .service-hero__phone { width: 130px; }
+}
+
+/* ── Big stats ──────────────────────────────────────────────────────────── */
+
+.stats-layout { display: grid; gap: var(--space-7); align-items: start; }
+@media (min-width: 940px) { .stats-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-8); } }
+
+.big-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-5); margin: 0; }
+
+/* Outlined rather than filled, following the reference: the number reads as
+   a graphic element instead of competing with the headline for weight. */
+.big-stat__value {
+  display: block;
+  margin: 0;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-weight: var(--weight-extrabold);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+
+.big-stat__label { display: block; margin-top: var(--space-3); color: var(--text-2); font-size: var(--t-body-sm-size); font-weight: var(--weight-semibold); }
+
+/* text-stroke is unsupported in a few engines; without this fallback the
+   number would render invisible rather than merely unstyled. */
+@supports not (-webkit-text-stroke: 1px red) {
+  .big-stat__value { color: var(--brand); -webkit-text-stroke: 0; }
+}
+
+/* ── Case study ─────────────────────────────────────────────────────────── */
+
+.case {
+  position: relative;
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(
+    150deg,
+    oklch(0.94 0.06 var(--card-hue, 263)),
+    oklch(0.98 0.02 var(--card-hue, 263))
+  );
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .case { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: var(--space-8); padding: var(--space-8); align-items: center; }
+}
+
+.case__client { margin: 0 0 var(--space-4); font-size: 1.5rem; letter-spacing: -0.03em; font-weight: var(--weight-extrabold); color: var(--text-1); }
+.case__p { margin: 0 0 var(--space-4); color: var(--text-2); font-size: var(--t-body-sm-size); line-height: 1.7; max-width: 56ch; }
+.case__art { position: relative; height: 320px; }
+
+.case__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  padding: 8px var(--space-4);
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: oklch(0.42 0.14 var(--card-hue, 263));
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  box-shadow: var(--shadow-md);
+}
+
+.case__phone {
+  position: absolute;
+  display: block;
+  width: 150px;
+  aspect-ratio: 9 / 19.5;
+  border: 6px solid oklch(0.26 0.02 260);
+  border-radius: 26px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+}
+
+.case__phone svg { display: block; width: 100%; height: 100%; }
+.case__phone--back { right: 40%; top: 8%; transform: rotate(-7deg) scale(0.9); }
+.case__phone--front { right: 8%; top: 18%; z-index: 2; }
+
+/* ── Card footer link ───────────────────────────────────────────────────── */
+
+.card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-5);
+  color: var(--brand);
+  font-size: var(--t-body-sm-size);
+  font-weight: var(--weight-bold);
+}
+
+.card__more svg { transition: transform var(--dur-fast) var(--ease-out); }
+
+@media (hover: hover) and (pointer: fine) {
+  .card--interactive:hover .card__more svg { transform: translateX(3px); }
+}
+
+/* ── Chip indicator readiness ───────────────────────────────────────────
+   The indicator is in the markup from the first paint but invisible until
+   JavaScript has measured the active chip, so it fades in rather than
+   appearing at the far left and sliding across. */
+.chips__indicator { opacity: 0; transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }
+.chips__indicator[data-ready="true"] { opacity: 1; }
+
+/* ── Navigation feedback ────────────────────────────────────────────────── */
+
+/* Fixed to the viewport, above the header: during a navigation the header is
+   still the old page's, and the bar has to read as belonging to the document,
+   not to the section under it. */
+.route-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-toast);
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Two-stage: it runs quickly to 70% while the route resolves — the honest
+   part, since the remaining time is unknown — then snaps to 100% and fades.
+   A bar that reaches 100% before the page arrives teaches people to distrust
+   it. */
+.route-progress__bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  background: var(--grad-brand);
+  box-shadow: 0 0 12px oklch(0.546 0.215 263 / 0.55);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.route-progress[data-state='pending'] .route-progress__bar {
+  animation: route-progress-fill 8s var(--ease-out) forwards;
+}
+
+.route-progress[data-state='done'] .route-progress__bar {
+  animation: route-progress-finish var(--dur-base) var(--ease-out) forwards;
+}
+
+@keyframes route-progress-fill {
+  0% { transform: scaleX(0.05); }
+  40% { transform: scaleX(0.45); }
+  100% { transform: scaleX(0.7); }
+}
+
+@keyframes route-progress-finish {
+  from { transform: scaleX(0.7); opacity: 1; }
+  70% { transform: scaleX(1); opacity: 1; }
+  to { transform: scaleX(1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-progress__bar,
+  .route-progress[data-state='pending'] .route-progress__bar,
+  .route-progress[data-state='done'] .route-progress__bar {
+    animation: none;
+    transform: scaleX(1);
+    opacity: 0.85;
+  }
+}
+
+/* ── Loading skeleton ───────────────────────────────────────────────────── */
+
+.skeleton-head { display: grid; gap: var(--space-3); max-width: 62ch; }
+
+/* One shimmering gradient wider than the element, translated across it.
+   Animating background-position on a huge gradient is the version that
+   repaints every frame; a transform on an overlay is not. */
+.skeleton {
+  position: relative;
+  display: block;
+  height: 1em;
+  border-radius: var(--radius-sm);
+  background: var(--bg-3);
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.75), transparent);
+  transform: translateX(-100%);
+  animation: skeleton-sweep 1.4s var(--ease-out) infinite;
+}
+
+.skeleton--eyebrow { width: 8rem; height: 0.85rem; margin-bottom: var(--space-2); }
+.skeleton--title { width: 100%; height: clamp(2.25rem, 5vw, 3.25rem); border-radius: var(--radius-md); }
+.skeleton--title-short { width: 68%; }
+.skeleton--lede { width: 92%; height: 1.1rem; margin-top: var(--space-2); }
+.skeleton--lede-short { width: 54%; margin-top: 0; }
+
+@keyframes skeleton-sweep {
+  to { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; opacity: 0; }
+}
+
+/* ── Case study page ────────────────────────────────────────────────────── */
+
+.case-stores { margin-top: var(--space-5); }
+
+/* A definition list, because that is what it is: four labelled facts about
+   the project, read before the narrative. */
+.case-facts {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-5);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 760px) { .case-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .case-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.case-fact dt {
+  margin-bottom: 6px;
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--t-micro-ls);
+  text-transform: uppercase;
+}
+
+.case-fact dd { margin: 0; color: var(--text-1); font-size: var(--t-body-sm-size); font-weight: var(--weight-semibold); }
+
+@media (min-width: 760px) and (max-width: 1039px) {
+  .case-fact--wide { grid-column: 1 / -1; }
+}
+
+.case-prose { max-width: 68ch; margin: 0 0 var(--space-4); color: var(--text-2); font-size: var(--t-body-lg-size); line-height: 1.7; }
+.case-prose:last-child { margin-bottom: 0; }
+
+/* Numbered because the order is the argument: each decision follows from the
+   one above it. */
+.case-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-5); }
+@media (min-width: 900px) { .case-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.case-step {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-5);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.case-step__index {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--grad-brand);
+  box-shadow: var(--shadow-brand);
+  color: #fff;
+  font-size: var(--t-body-sm-size);
+  font-weight: var(--weight-extrabold);
+}
+
+.case-step__title { margin: 0 0 var(--space-2); font-size: 1.0625rem; letter-spacing: -0.02em; font-weight: var(--weight-bold); color: var(--text-1); }
+.case-step__body { margin: 0; color: var(--text-2); font-size: var(--t-body-sm-size); line-height: 1.6; }
+
+.case-outcomes { justify-items: center; text-align: center; }
+
+.case-quote {
+  position: relative;
+  margin: 0;
+  padding: var(--space-6);
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-md);
+}
+
+.case-quote[data-placeholder='true'] { border-style: dashed; }
+.case-quote__text { margin: var(--space-4) 0 var(--space-5); color: var(--text-1); font-size: var(--t-body-lg-size); line-height: 1.6; }
+
+/* ── Language switcher ──────────────────────────────────────────────────── */
+
+/* Three links, not a dropdown: with only three options a select costs a click
+   and hides the alternatives. The active one is filled rather than merely
+   coloured — at this size a colour difference alone is too quiet. */
+.locale-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: var(--border-hairline) solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-2);
+}
+
+.locale-switcher__option {
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-size: var(--t-micro-size);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.locale-switcher__option[data-active='true'] { background: var(--brand); color: #fff; }
+
+@media (hover: hover) and (pointer: fine) {
+  .locale-switcher__option:not([data-active='true']):hover {
+    background: var(--nav-surface, var(--blue-100));
+    color: var(--brand);
+  }
+}
+
+/* On a phone the switcher moves into the drawer, where there is room. */

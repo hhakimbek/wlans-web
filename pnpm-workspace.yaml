@@ -1,0 +1,9 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# sharp compiles a native binary during install. pnpm blocks build scripts by
+# default, so it has to be allowed by name. The equivalent `pnpm` field in
+# package.json is ignored by pnpm 11 — it must live here.
+onlyBuiltDependencies:
+  - sharp

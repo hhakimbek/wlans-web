@@ -1,0 +1,188 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   wlans · design tokens · COLOR
+   Light-locked. Blue-led. Glass and depth.
+
+   Sourced from the ui-ux-pro-max profile for "mobile app development agency,
+   light, modern": trust blue #2563EB on a soft #F8FAFC ground, white cards,
+   glassmorphism chrome. Values re-authored in OKLCH so the contrast gate can
+   verify them, and adjusted where the source palette failed WCAG.
+
+   TWO CORRECTIONS FROM THE EARLIER, DARK ATTEMPT:
+
+   1. There is no `prefers-color-scheme: dark` override. The site follows the
+      brand, not the operating system. A visitor whose OS is dark was being
+      shown a dark site — which is what "make it light mode" was reporting.
+      Dark returns only behind an explicit [data-theme='dark'] opt-in.
+
+   2. Colour is used generously. The previous palette rationed the accent to
+      links and focus only; the result read unfinished rather than restrained.
+      Blue now carries gradients, surfaces, icons, borders and the CTA.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light;
+
+  /* ── Brand blue ramp ───────────────────────────────────────────────────
+     One hue (263) walked across lightness. A ramp built this way keeps its
+     relationships when a step is swapped, which a hand-picked set of blues
+     never does. */
+  --blue-50: oklch(0.972 0.013 263);
+  --blue-100: oklch(0.936 0.030 263);
+  --blue-200: oklch(0.882 0.057 263);
+  --blue-300: oklch(0.806 0.097 263);
+  --blue-400: oklch(0.700 0.156 263);
+  --blue-500: oklch(0.623 0.188 263); /* #3B82F6 secondary            */
+  --blue-600: oklch(0.546 0.215 263); /* #2563EB primary — the brand  */
+  --blue-700: oklch(0.470 0.190 263);
+  --blue-800: oklch(0.395 0.160 263);
+  --blue-900: oklch(0.320 0.120 263);
+
+  --brand: var(--blue-600);
+  --brand-hover: var(--blue-700);
+  --brand-soft: var(--blue-50);
+  --brand-ring: oklch(0.546 0.215 263 / 0.35);
+
+  /* ── Surfaces ────────────────────────────────────────────────────────────
+     The ground is a cool off-white, not pure white: cards can then be pure
+     white and read as lifted without needing a heavy shadow to prove it. */
+  --bg-0: oklch(0.984 0.003 248); /* #F8FAFC page          */
+  --bg-1: oklch(0.965 0.008 258); /* alternating band      */
+  --bg-2: oklch(1 0 0);           /* #FFFFFF card          */
+  --bg-3: oklch(0.964 0.012 258); /* muted / hover — lightened from the
+                                     source #E9EFF8, on which the brand blue
+                                     only reached 4.47:1 */
+
+  /* ── Lines ───────────────────────────────────────────────────────────────
+     Decorative dividers are exempt from contrast minimums; the boundary of a
+     control is a UI component and must clear 3:1. Two tokens, because
+     conflating them is how "accessible" palettes ship unusable inputs. */
+  --line: oklch(0.898 0.016 256);         /* decorative — darkened from
+                                             #E2E8F0, which vanished against
+                                             the off-white ground and left
+                                             cards with no readable edge */
+  --line-control: oklch(0.640 0.030 258); /* control edge, >=3:1 */
+
+  /* ── Ink ───────────────────────────────────────────────────────────────
+     `--text-2` is darkened from the source palette's #475569, which lands at
+     4.4:1 on this ground — just under the body-text minimum. */
+  --text-1: oklch(0.279 0.037 260); /* #1E293B headings */
+  --text-2: oklch(0.420 0.034 258); /* body             */
+  --text-3: oklch(0.530 0.030 258); /* captions, meta   */
+  --text-on-brand: oklch(1 0 0);
+
+  /* ── Semantic ────────────────────────────────────────────────────────── */
+  --success: oklch(0.520 0.145 150);
+  --warn: oklch(0.560 0.130 60);
+  --danger: oklch(0.530 0.200 27);
+  --accent-warm: oklch(0.646 0.194 41); /* highlights and badges only */
+
+  /* ── Gradients ───────────────────────────────────────────────────────────
+     The visual richness the flat version was missing. `--glow-*` are the soft
+     blue blooms behind the hero; they are painted with radial-gradient rather
+     than blurred elements, because a large `filter: blur()` is one of the few
+     reliable ways to lose frames on a mid-range phone. */
+  --grad-brand: linear-gradient(135deg, var(--blue-600), var(--blue-400));
+  --grad-brand-soft: linear-gradient(135deg, var(--blue-50), oklch(1 0 0));
+  --grad-text: linear-gradient(120deg, var(--blue-700), var(--blue-500));
+  --glow-a: oklch(0.700 0.168 263 / 0.28);
+  --glow-b: oklch(0.806 0.112 290 / 0.22);
+  --glow-c: oklch(0.850 0.090 200 / 0.20);
+
+  /* ── Glass ─────────────────────────────────────────────────────────────
+     Frosted chrome, per the Glassmorphism profile. `--glass-edge` is the
+     bright top border that reads as light catching the material — without it
+     a translucent panel looks like a rendering artefact rather than a surface. */
+  --glass: oklch(1 0 0 / 0.72);
+  --glass-strong: oklch(1 0 0 / 0.88);
+  --glass-edge: oklch(1 0 0 / 0.85);
+
+  /* ── Elevation ───────────────────────────────────────────────────────────
+     Shadows are blue-tinted rather than grey. A neutral-grey shadow on a
+     cool ground reads muddy; tinting it toward the surface hue is the detail
+     that separates a designed card from a default one. */
+  --shadow-xs: 0 1px 2px oklch(0.320 0.115 263 / 0.06);
+  /* Two layers: a tight contact shadow that draws the edge and a wide one
+     that lifts. One 8px blur alone read as a smudge and left the card
+     boundary to the border, which is exactly where it was failing. */
+  --shadow-sm: 0 1px 2px oklch(0.320 0.115 263 / 0.07), 0 4px 14px oklch(0.320 0.115 263 / 0.08);
+  --shadow-md: 0 8px 24px oklch(0.320 0.115 263 / 0.10);
+  --shadow-lg: 0 20px 48px oklch(0.320 0.115 263 / 0.14);
+  --shadow-brand: 0 8px 24px oklch(0.546 0.215 263 / 0.28);
+
+  /* ── Chrome ──────────────────────────────────────────────────────────── */
+  --material: var(--glass);
+  --scrim: oklch(0.279 0.037 260 / 0.45);
+
+  /* ── CTA — the brand blue, not ink ─────────────────────────────────────
+     On a light ground a saturated blue button is already the loudest element
+     on the page, and it ties the primary action to the brand. */
+  --cta-bg: var(--brand);
+  --cta-fg: var(--text-on-brand);
+
+  --focus-ring: var(--blue-600);
+  --focus-width: 3px;
+  --focus-offset: 2px;
+}
+
+/* Dark is opt-in only — never automatic. See the header note. */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg-0: oklch(0.190 0.020 263);
+  --bg-1: oklch(0.230 0.024 263);
+  --bg-2: oklch(0.260 0.026 263);
+  --bg-3: oklch(0.300 0.028 263);
+
+  --line: oklch(0.330 0.028 263);
+  --line-control: oklch(0.500 0.035 263);
+
+  --text-1: oklch(0.970 0.006 263);
+  --text-2: oklch(0.810 0.020 263);
+  --text-3: oklch(0.670 0.026 263);
+
+  --brand: var(--blue-400);
+  --brand-hover: var(--blue-300);
+  --brand-soft: oklch(0.546 0.215 263 / 0.16);
+
+  /* Lifted for a dark ground: the light-theme values land near 3:1 here. */
+  --success: oklch(0.720 0.160 150);
+  --danger: oklch(0.680 0.170 25);
+  --warn: oklch(0.780 0.130 70);
+
+  --glass: oklch(0.190 0.020 263 / 0.72);
+  --glass-strong: oklch(0.190 0.020 263 / 0.9);
+  --glass-edge: oklch(1 0 0 / 0.10);
+  --material: var(--glass);
+
+  --grad-brand-soft: linear-gradient(135deg, oklch(0.546 0.215 263 / 0.22), transparent);
+  --grad-text: linear-gradient(120deg, var(--blue-300), var(--blue-400));
+
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-sm: 0 2px 8px oklch(0 0 0 / 0.45);
+  --shadow-md: 0 8px 24px oklch(0 0 0 / 0.5);
+  --shadow-lg: 0 20px 48px oklch(0 0 0 / 0.55);
+
+  /* blue-500 gives white only 3.70:1. The CTA keeps blue-600 in both
+     themes; it is the fill behind white text, not a surface colour. */
+  --cta-bg: var(--blue-600);
+  --cta-fg: oklch(1 0 0);
+  --focus-ring: var(--blue-300);
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --line: var(--line-control);
+    --text-3: var(--text-2);
+  }
+}
+
+body {
+  background: var(--bg-0);
+  color: var(--text-2);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-sm);
+}

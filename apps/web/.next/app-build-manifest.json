@@ -21,6 +21,26 @@
       "static/chunks/main-app.js",
       "static/chunks/app/[locale]/page.js"
     ],
+    "/[locale]/work/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/work/[slug]/page.js"
+    ],
+    "/[locale]/services/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/services/[slug]/page.js"
+    ],
+    "/[locale]/work/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/work/page.js"
+    ],
+    "/[locale]/company/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/[locale]/company/page.js"
+    ],
     "/[locale]/contact/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

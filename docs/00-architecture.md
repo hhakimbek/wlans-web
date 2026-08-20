@@ -33,7 +33,7 @@ before Phase 2 if wrong.
 > software.** The display framework was one project, not the identity.
 
 **wlans** is a product engineering team. It builds mobile applications, web
-applications, and the backend and cloud infrastructure behind them, for clients.
+applications, and the backend and cloud infrastructure behind them, for  clients.
 It also writes its own tools in-house, of which the Arduino display framework is
 one — a single page of evidence that the team builds its own instruments, not a
 product line.

@@ -1,7 +1,7 @@
 'use client'
 
-import { AlertCircle, CheckCircle2, Loader2, Send } from 'lucide-react'
-import { useState } from 'react'
+import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
+import { useId, useState } from 'react'
 
 import type { FormStrings } from '@/content/types'
 import type { Locale } from '@/i18n'
@@ -24,6 +24,18 @@ type Status =
  * honestly along with the direct Telegram and email links, rather than a fake
  * success. A lead the visitor thinks was sent, but was not, is the worst
  * possible outcome for this page.
+ *
+ * Three things the previous version left out, and each of them is the
+ * difference between a form that works and a form that works for everyone:
+ *
+ * 1. **Every error is wired to its field** with `aria-describedby`, so a
+ *    screen reader announces the message when focus lands on the input rather
+ *    than leaving a red border to speak for itself.
+ * 2. **Errors clear on blur, not on submit.** Fixing a field and being told it
+ *    is still wrong until you press the button again is the classic way a form
+ *    feels hostile.
+ * 3. **Nine inputs are two named groups.** "About you" and "About the project"
+ *    are different questions, and a single column of fields hides that.
  *
  * Option labels and contact details arrive as props: this is a client
  * component and cannot read the active locale from the route the way a server
@@ -55,6 +67,18 @@ export function InquiryForm({
   const set = <K extends keyof InquiryInput>(key: K, value: InquiryInput[K]) => {
     setValues((previous) => ({ ...previous, [key]: value }))
     if (errors[key]) setErrors(({ [key as string]: _removed, ...rest }) => rest)
+  }
+
+  /* Re-check one field when the user leaves it, but only to CLEAR an error
+     that is already showing. Validating a field the first time someone tabs
+     through it — before they have typed anything — turns an empty form into a
+     wall of red. */
+  const revalidate = (key: keyof InquiryInput) => {
+    if (!errors[key as string]) return
+    const parsed = inquirySchema.safeParse(values)
+    if (parsed.success || !parsed.error.issues.some((issue) => issue.path[0] === key)) {
+      setErrors(({ [key as string]: _removed, ...rest }) => rest)
+    }
   }
 
   async function onSubmit(event: React.FormEvent) {
@@ -110,11 +134,13 @@ export function InquiryForm({
           <CheckCircle2 size={28} strokeWidth={2.2} />
         </span>
         <h3 className="form-result__title">{ui.successTitle}</h3>
-        <p className="form-result__body">
-          <strong>{status.ref}</strong> — {ui.successBody}
+        <p className="form-result__ref">
+          {ui.successRefLabel} {status.ref}
         </p>
+        <p className="form-result__body">{ui.successBody}</p>
         <a className="btn btn--secondary" href={telegramUrl} target="_blank" rel="noreferrer">
           Telegram
+          <ArrowRight size={17} strokeWidth={2.5} aria-hidden="true" />
         </a>
       </div>
     )
@@ -124,114 +150,125 @@ export function InquiryForm({
 
   return (
     <form className="form" onSubmit={onSubmit} noValidate>
-      <div className="form__row">
-        <Field label={ui.name} name="name" error={errors.name} required>
-          <input
-            id="name"
-            name="name"
-            className="input"
-            value={values.name}
-            onChange={(e) => set('name', e.target.value)}
-            autoComplete="name"
-            placeholder={ui.namePlaceholder}
-          />
-        </Field>
+      <fieldset className="form__group">
+        <legend className="form__legend">{ui.groupYou}</legend>
 
-        <Field label={ui.email} name="email" error={errors.email} required>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className="input"
-            value={values.email}
-            onChange={(e) => set('email', e.target.value)}
-            autoComplete="email"
-            placeholder={ui.emailPlaceholder}
-          />
-        </Field>
-      </div>
+        <div className="form__row">
+          <Field label={ui.name} name="name" error={errors.name} required>
+            {(props) => (
+              <input
+                {...props}
+                value={values.name}
+                onChange={(e) => set('name', e.target.value)}
+                onBlur={() => revalidate('name')}
+                autoComplete="name"
+                placeholder={ui.namePlaceholder}
+              />
+            )}
+          </Field>
 
-      <div className="form__row">
-        <Field label={ui.company} name="company" hint={ui.optional}>
-          <input
-            id="company"
-            name="company"
-            className="input"
-            value={values.company}
-            onChange={(e) => set('company', e.target.value)}
-            autoComplete="organization"
-            placeholder={ui.companyPlaceholder}
-          />
-        </Field>
+          <Field label={ui.email} name="email" error={errors.email} required>
+            {(props) => (
+              <input
+                {...props}
+                type="email"
+                value={values.email}
+                onChange={(e) => set('email', e.target.value)}
+                onBlur={() => revalidate('email')}
+                autoComplete="email"
+                placeholder={ui.emailPlaceholder}
+              />
+            )}
+          </Field>
+        </div>
 
-        <Field label={ui.contact} name="contact" hint={ui.contactHint}>
-          <input
-            id="contact"
-            name="contact"
-            className="input"
-            value={values.contact}
-            onChange={(e) => set('contact', e.target.value)}
-            autoComplete="tel"
-            placeholder={ui.contactPlaceholder}
-          />
-        </Field>
-      </div>
+        <div className="form__row">
+          <Field label={ui.company} name="company" hint={ui.optional}>
+            {(props) => (
+              <input
+                {...props}
+                value={values.company}
+                onChange={(e) => set('company', e.target.value)}
+                autoComplete="organization"
+                placeholder={ui.companyPlaceholder}
+              />
+            )}
+          </Field>
 
-      <div className="form__row form__row--3">
-        <Field label={ui.projectType} name="projectType">
-          <select
-            id="projectType"
-            name="projectType"
-            className="input"
-            value={values.projectType}
-            onChange={(e) => set('projectType', e.target.value as InquiryInput['projectType'])}
-          >
-            {options.projectTypes.map((option) => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-        </Field>
+          <Field label={ui.contact} name="contact" hint={ui.contactHint}>
+            {(props) => (
+              <input
+                {...props}
+                value={values.contact}
+                onChange={(e) => set('contact', e.target.value)}
+                autoComplete="tel"
+                placeholder={ui.contactPlaceholder}
+              />
+            )}
+          </Field>
+        </div>
+      </fieldset>
 
-        <Field label={ui.budget} name="budget">
-          <select
-            id="budget"
-            name="budget"
-            className="input"
-            value={values.budget}
-            onChange={(e) => set('budget', e.target.value as InquiryInput['budget'])}
-          >
-            {options.budgetRanges.map((option) => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-        </Field>
+      <fieldset className="form__group">
+        <legend className="form__legend">{ui.groupProject}</legend>
 
-        <Field label={ui.timeline} name="timeline">
-          <select
-            id="timeline"
-            name="timeline"
-            className="input"
-            value={values.timeline}
-            onChange={(e) => set('timeline', e.target.value as InquiryInput['timeline'])}
-          >
-            {options.timelines.map((option) => (
-              <option key={option}>{option}</option>
-            ))}
-          </select>
-        </Field>
-      </div>
+        <div className="form__row form__row--3">
+          <Field label={ui.projectType} name="projectType">
+            {(props) => (
+              <select
+                {...props}
+                value={values.projectType}
+                onChange={(e) => set('projectType', e.target.value as InquiryInput['projectType'])}
+              >
+                {options.projectTypes.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            )}
+          </Field>
 
-      <Field label={ui.message} name="message" error={errors.message} required>
-        <textarea
-          id="message"
-          name="message"
-          className="input input--area"
-          rows={6}
-          value={values.message}
-          onChange={(e) => set('message', e.target.value)}
-          placeholder={ui.messagePlaceholder}
-        />
-      </Field>
+          <Field label={ui.budget} name="budget">
+            {(props) => (
+              <select
+                {...props}
+                value={values.budget}
+                onChange={(e) => set('budget', e.target.value as InquiryInput['budget'])}
+              >
+                {options.budgetRanges.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+
+          <Field label={ui.timeline} name="timeline">
+            {(props) => (
+              <select
+                {...props}
+                value={values.timeline}
+                onChange={(e) => set('timeline', e.target.value as InquiryInput['timeline'])}
+              >
+                {options.timelines.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+        </div>
+
+        <Field label={ui.message} name="message" error={errors.message} required area>
+          {(props) => (
+            <textarea
+              {...props}
+              rows={6}
+              value={values.message}
+              onChange={(e) => set('message', e.target.value)}
+              onBlur={() => revalidate('message')}
+              placeholder={ui.messagePlaceholder}
+            />
+          )}
+        </Field>
+      </fieldset>
 
       {/* Honeypot. Hidden from people, irresistible to bots. */}
       <div className="honeypot" aria-hidden="true">
@@ -272,8 +309,8 @@ export function InquiryForm({
             </>
           ) : (
             <>
-              <Send size={18} strokeWidth={2.4} aria-hidden="true" />
               {ui.submit}
+              <ArrowRight size={18} strokeWidth={2.5} aria-hidden="true" />
             </>
           )}
         </button>
@@ -283,12 +320,23 @@ export function InquiryForm({
   )
 }
 
+/** The props a `Field` hands to whichever control it wraps. */
+type ControlProps = {
+  id: string
+  name: string
+  className: string
+  'aria-invalid'?: true
+  'aria-describedby'?: string
+  'aria-required'?: true
+}
+
 function Field({
   label,
   name,
   hint,
   error,
   required,
+  area,
   children,
 }: {
   label: string
@@ -296,23 +344,44 @@ function Field({
   hint?: string
   error?: string
   required?: boolean
-  children: React.ReactNode
+  /** Textarea rather than a single-line input. */
+  area?: boolean
+  children: (props: ControlProps) => React.ReactNode
 }) {
+  /* A generated id, not the field name: two forms on one page would otherwise
+     produce duplicate ids and `aria-describedby` would resolve to whichever
+     one the browser found first. */
+  const uid = useId()
+  const describedBy = error ? uid + '-error' : hint ? uid + '-hint' : undefined
+
   return (
     <div className="field" data-invalid={Boolean(error)}>
-      <label className="field__label" htmlFor={name}>
+      <label className="field__label" htmlFor={uid}>
         {label}
-        {required ? <span aria-hidden="true"> *</span> : null}
+        {required ? <span aria-hidden="true">*</span> : null}
       </label>
-      {children}
-      {/* Errors sit next to the field, not in a summary at the top — the user
-          is looking here, not there. */}
+
+      {children({
+        id: uid,
+        name,
+        className: area ? 'input input--area' : 'input',
+        ...(error ? { 'aria-invalid': true as const } : {}),
+        ...(describedBy ? { 'aria-describedby': describedBy } : {}),
+        ...(required ? { 'aria-required': true as const } : {}),
+      })}
+
+      {/* The message sits next to the field, not in a summary at the top — the
+          user is looking here, not there — and it is announced because the
+          control points at it. */}
       {error ? (
-        <p className="field__error" role="alert">
+        <p className="field__error" id={uid + '-error'}>
+          <AlertCircle size={13} strokeWidth={2.6} aria-hidden="true" />
           {error}
         </p>
       ) : hint ? (
-        <p className="field__hint">{hint}</p>
+        <p className="field__hint" id={uid + '-hint'}>
+          {hint}
+        </p>
       ) : null}
     </div>
   )

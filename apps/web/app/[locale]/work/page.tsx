@@ -50,6 +50,7 @@ export default async function WorkPage({ params }: Params) {
             projects={site.work}
             categories={site.workCategories}
             ui={site.ui.gallery}
+            screens={site.ui.screens}
           />
         </div>
       </section>

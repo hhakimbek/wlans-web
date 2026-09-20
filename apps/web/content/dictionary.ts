@@ -47,6 +47,9 @@ export interface Dictionary {
   }
   showreel: { title: string; caption: string }
   hero: {
+    /* Anchors the claim to a discipline and a place before the headline makes
+       its promise. Without it the h1 could belong to any agency anywhere. */
+    eyebrow: string
     titleLead: string
     titleAccent: string
     lede: string

@@ -3,7 +3,8 @@
 import { ArrowLeft, ArrowRight, Quote, Star } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { AppScreen } from './app-screen'
+import Image from 'next/image'
+
 import { VideoModal } from '@/components/ui/video-modal'
 import type { RailStrings, Testimonial } from '@/content/types'
 
@@ -70,9 +71,12 @@ export function TestimonialRail({
                 title={ui.videoReview + ' — ' + item.name}
                 variant="thumbnail"
                 poster={
-                  <span className="video-thumb__art">
-                    <AppScreen hue={item.hue ?? 263} variant="list" />
-                  </span>
+                  <Image
+                    src="/img/studio.jpg"
+                    alt=""
+                    fill
+                    sizes="(max-width: 960px) 80vw, 330px"
+                  />
                 }
               />
               <p className="rail__video-label">

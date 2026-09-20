@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ChevronDown, ChevronLeft, Zap } from 'lucide-react'
+import { ChevronDown, ChevronLeft } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { ButtonLink } from '@/components/ui/button'
@@ -34,6 +34,38 @@ export interface HeaderService {
   title: string
   point: string
   group: string
+}
+
+/* Three arcs radiating from a point — the shape the company's own name
+   describes. It replaces a generic lightning bolt in a gradient-filled
+   rounded square, which is the logo every generated site is given. Flat ink,
+   sized to the cap height, so it reads as part of the wordmark. */
+function Mark() {
+  return (
+    <svg viewBox="0 0 22 22" fill="none" aria-hidden="true">
+      <circle cx="4" cy="18" r="2.4" fill="currentColor" />
+      <path
+        d="M3.6 12.2a6.2 6.2 0 0 1 6.2 6.2"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M3.6 6.4A12 12 0 0 1 15.6 18.4"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M3.6 0.8A17.6 17.6 0 0 1 21.2 18.4"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        opacity="0.28"
+      />
+    </svg>
+  )
 }
 
 export function Header({
@@ -122,7 +154,7 @@ export function Header({
 
         <Link href={path('/')} className="header__brand" data-has-back={Boolean(parentHref)}>
           <span className="header__mark" aria-hidden="true">
-            <Zap size={17} strokeWidth={2.5} fill="currentColor" />
+            <Mark />
           </span>
           {company.name}
         </Link>

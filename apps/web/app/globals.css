@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 @import '@wlans/design-tokens/index.css';
+/* Import order is load-bearing. `device.css` comes first because it declares
+   the component's own defaults (`.device { width: 100% }`); every later file
+   places a device in a context and must be able to override that with a
+   single-class selector rather than by escalating specificity. */
+@import './device.css';
 @import './components.css';
 @import './components-2.css';
 @import './components-3.css';
@@ -14,13 +19,13 @@
   --color-bg-2: var(--bg-2);
   --color-bg-3: var(--bg-3);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-line-control: var(--line-control);
+  --color-ink: var(--ink);
   --color-text-1: var(--text-1);
   --color-text-2: var(--text-2);
   --color-text-3: var(--text-3);
-  --color-signal: var(--signal);
-  --color-signal-dim: var(--signal-dim);
-  --color-domain: var(--domain);
+  --color-brand: var(--brand);
   --color-success: var(--success);
   --color-danger: var(--danger);
 
@@ -32,15 +37,6 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
-}
-
-/* next/font supplies the hashed family names; the token layer only declares
-   the roles. Keeping the fallback stack here means a font failure degrades to
-   the system UI face rather than to Times. */
-:root {
-  --font-sans:
-    var(--font-manrope), ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, sans-serif;
 }
 
 *,
@@ -68,6 +64,10 @@ body {
   margin: 0;
   min-height: 100dvh;
   font-family: var(--font-sans);
+  /* A hard floor under the "no horizontal scroll at any width" rule. `clip`,
+     not `hidden`: `overflow: hidden` on one axis turns the other into a scroll
+     container, which silently breaks every `position: sticky` on the page. */
+  overflow-x: clip;
 }
 
 .container {

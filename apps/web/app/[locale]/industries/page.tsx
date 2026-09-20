@@ -53,7 +53,9 @@ export default async function IndustriesPage({ params }: Params) {
             projects={site.work}
             categories={site.workCategories}
             ui={site.ui.gallery}
+            screens={site.ui.screens}
             limit={4}
+            showFilters={false}
           />
           <div className="section__cta">
             <ButtonLink href={localePath(locale, '/work')} variant="secondary">

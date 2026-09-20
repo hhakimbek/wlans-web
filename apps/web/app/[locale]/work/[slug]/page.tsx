@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowRight, ChevronRight, Quote, Star } from 'lucide-react'
 
 import { ButtonLink } from '@/components/ui/button'
 import { AppScreen } from '@/components/marketing/app-screen'
+import { Device } from '@/components/marketing/device'
 import { AppleMark, GooglePlayMark } from '@/components/marketing/brand-icons'
 import { Notice } from '@/components/marketing/notice'
 import { SectionHead } from '@/components/marketing/sections'
@@ -77,7 +79,7 @@ export default async function CaseStudyPage({ params }: Params) {
               <span aria-current="page">{project.client}</span>
             </nav>
 
-            <span className="showcase-card__tag">
+            <span className="detail-tag">
               <ServiceIcon name={categoryIcon(project.category)} size={14} />
               {project.industry}
             </span>
@@ -126,15 +128,20 @@ export default async function CaseStudyPage({ params }: Params) {
           </div>
 
           <div className="service-hero__art" aria-hidden="true">
-            <span className="service-hero__phone service-hero__phone--left">
-              <AppScreen hue={project.hue} variant="list" />
-            </span>
-            <span className="service-hero__phone service-hero__phone--mid">
-              <AppScreen hue={project.hue} variant="dash" />
-            </span>
-            <span className="service-hero__phone service-hero__phone--right">
-              <AppScreen hue={project.hue} variant="map" />
-            </span>
+            <Device className="service-hero__phone service-hero__phone--left">
+              <AppScreen variant="finance" hue={project.hue} s={ui.screens} />
+            </Device>
+            <Device className="service-hero__phone service-hero__phone--mid">
+              <AppScreen
+                variant={project.screen}
+                hue={project.hue}
+                photos={project.shots}
+                s={ui.screens}
+              />
+            </Device>
+            <Device className="service-hero__phone service-hero__phone--right">
+              <AppScreen variant="catalog" hue={project.hue} photos={project.shots} s={ui.screens} />
+            </Device>
           </div>
         </div>
       </section>
@@ -142,6 +149,22 @@ export default async function CaseStudyPage({ params }: Params) {
       {/* ── Facts ──────────────────────────────────────────────────────── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
+          {/* The conditions the product runs in, not a screenshot of it. The
+              client's own artwork does not exist yet, and a photograph of the
+              operating environment is the honest version of the same claim. */}
+          <figure
+            className="case-hero-media"
+            style={{ ['--page-hue' as string]: String(project.hue) }}
+          >
+            <Image
+              src={project.photo}
+              alt=""
+              fill
+              sizes="(max-width: 1220px) 100vw, 1220px"
+              priority
+            />
+          </figure>
+
           {project.placeholder ? (
             <Notice>
               {ui.notices.placeholderProject} <code>apps/web/content/locales/</code>.

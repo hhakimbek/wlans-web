@@ -7,6 +7,9 @@
    translator never sees a hue and a developer never re-types a paragraph.
    ───────────────────────────────────────────────────────────────────────── */
 
+/** Which illustrative interface a device renders. See `app-screen.tsx`. */
+export type ScreenVariant = 'track' | 'finance' | 'catalog' | 'schedule'
+
 export interface Industry {
   slug: string
   icon: string
@@ -23,8 +26,14 @@ export interface Project {
   summary: string
   result: string
   stack: string[]
-  /** Drives the generated screen artwork so each card reads as a distinct product. */
+  /** Drives the accent inside the device screen so each product reads distinct. */
   hue: number
+  /** The environment the product runs in — never a fabricated screenshot. */
+  photo: string
+  /** Which interface the device on this card renders. */
+  screen: ScreenVariant
+  /** Photos used inside that interface, where it shows imagery. */
+  shots?: readonly string[]
   /** Store presence, shown as badges on the card. */
   stores?: { ios?: string; android?: string }
   /** Quote revealed when the card is hovered or focused. */
@@ -68,8 +77,10 @@ export interface ServiceDef {
   summary: string
   points: string[]
   lede: string
-  /** Hue for the generated artwork on this page. */
+  /** Hue for the artwork on this page. */
   hue: number
+  /** The three interfaces the hero devices render, left to right. */
+  screens: readonly ScreenVariant[]
   stats: { value: string; label: string }[]
   techIntro: string
   technologies: ServiceTech[]
@@ -94,6 +105,7 @@ export interface SiteContent {
   }
   showreel: { youtubeId: string; title: string; caption: string }
   hero: {
+    eyebrow: string
     titleLead: string
     titleAccent: string
     lede: string
@@ -163,6 +175,7 @@ export interface UiStrings {
   caseStudy: CaseStudyStrings
   serviceDetail: ServiceDetailStrings
   gallery: GalleryStrings
+  screens: ScreenStrings
   rail: RailStrings
   form: FormStrings
   notices: NoticeStrings
@@ -350,6 +363,33 @@ export interface GalleryStrings {
   googlePlay: string
 }
 
+/* The words inside the illustrative app screens. They are decorative art, but
+   an English label sitting inside a phone on the Russian page is exactly the
+   kind of seam that tells a reader the site was translated rather than built
+   in three languages. Numbers, currency and icons carry everything else. */
+export interface ScreenStrings {
+  /* track */
+  minutes: string
+  enRoute: string
+  orderNo: string
+  courier: string
+  trackOrder: string
+  /* finance */
+  balance: string
+  topUp: string
+  send: string
+  pay: string
+  more: string
+  recent: string
+  all: string
+  /* catalog */
+  search: string
+  popular: string
+  /* schedule */
+  slots: string
+  book: string
+}
+
 export interface RailStrings {
   previous: string
   next: string
@@ -359,6 +399,10 @@ export interface RailStrings {
 }
 
 export interface FormStrings {
+  /* Nine inputs in one column is a wall. The two legends name what each half
+     of the form is actually asking for. */
+  groupYou: string
+  groupProject: string
   name: string
   namePlaceholder: string
   email: string
@@ -378,6 +422,8 @@ export interface FormStrings {
   submitting: string
   successTitle: string
   successBody: string
+  /** Shown above the reference number on the success screen. */
+  successRefLabel: string
   errorTitle: string
   website: string
 }

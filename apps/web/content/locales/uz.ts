@@ -17,24 +17,25 @@ export const uz: Dictionary = {
   },
 
   hero: {
-    titleLead: 'Biz ishlaydigan',
-    titleAccent: 'mobil ilovalar quramiz.',
+    eyebrow: 'Toshkentdagi ishlab chiqish jamoasi',
+    titleLead: 'Biz mobil ilovalar quramiz —',
+    titleAccent: 'ishlaydiganlarini.',
     lede:
-      'wlans — Toshkentdagi mahsulot muhandisligi jamoasi. Mobil va veb mahsulotlarni birinchi suhbatdan tirik relizgacha olib boramiz — va reliz ortidan ham qolamiz, chunki asosiy ish oʻsha yerdan boshlanadi.',
+      'wlans — Toshkentda mobil va veb ilovalar ishlab chiqadigan jamoa. Loyihani birinchi suhbatdan foydalanuvchilar qoʻliga yetguncha olib boramiz — va ishga tushgandan keyin ham yoningizda qolamiz, chunki asosiy ish oʻsha yerdan boshlanadi.',
     primaryCta: 'Loyiha buyurtma qilish',
     secondaryCta: 'Ishlarimizni koʻrish',
     trust: [
       'iOS, Android va Flutter',
-      'Bitta jamoa: skopdan relizgacha',
-      'Relizdan keyingi qoʻllab-quvvatlash',
+      'Gʻoyadan ishga tushirishgacha — bitta jamoa',
+      'Ishga tushgandan keyin ham qoʻllab-quvvatlaymiz',
     ],
   },
 
   proof: [
-    { value: '40+', label: 'Yetkazilgan mahsulot' },
-    { value: '7', label: 'Yil tajriba' },
-    { value: '18', label: 'Shtatdagi muhandis' },
-    { value: '9', label: 'Xizmat koʻrsatilgan davlat' },
+    { value: '40+', label: 'Ishga tushirilgan loyiha' },
+    { value: '7', label: 'Yillik tajriba' },
+    { value: '18', label: 'Doimiy jamoada' },
+    { value: '9', label: 'Biz ishlagan davlat' },
   ],
 
 
@@ -137,7 +138,7 @@ export const uz: Dictionary = {
       approach: [
         {
           title: 'Avval tahdid modeli',
-          body: 'Bironta ekran qurilishidan avval hujumchi nima qilishga urinishini, har bir nazorat nima uchun kerakligini va nima aniq skop tashqarisida ekanini yozib qoʻydik. Hujjat topshiriq uchun emas, kod bilan birga yuritildi.',
+          body: 'Bironta ekran qurilishidan avval hujumchi nima qilishga urinishini, har bir nazorat nima uchun kerakligini va nima ataylab ish hajmidan tashqarida qoldirilganini yozib qoʻydik. Hujjat topshiriq uchun emas, kod bilan birga yuritildi.',
         },
         {
           title: 'Ikkala platformada native',
@@ -324,28 +325,28 @@ export const uz: Dictionary = {
       duration: '1-kun',
     },
     {
-      title: 'Skoplash',
-      body: 'Sotuv taqdimoti emas, ishchi sessiya. Siz yozma skop, narx oraligʻi va hali bilmagan narsalarimiz roʻyxati bilan chiqasiz.',
+      title: 'Ish hajmini aniqlash',
+      body: 'Sotuv taqdimoti emas, ishchi sessiya. Siz yozma ish hajmi, narx oraligʻi va hali bilmagan narsalarimiz roʻyxati bilan chiqasiz.',
       duration: '1-hafta',
     },
     {
       title: 'Dizayn',
-      body: 'Prodakshn kod paydo boʻlishidan avval bosib koʻrsa boʻladigan oqim va ekranlar. Prototipni oʻzgartirish arzon; chiqarilgan ilovani oʻzgartirish emas.',
+      body: 'Yakuniy kod yozilishidan avval bosib koʻrsa boʻladigan oqim va ekranlar. Prototipni oʻzgartirish arzon; chiqarilgan ilovani oʻzgartirish emas.',
       duration: '2–4 hafta',
     },
     {
       title: 'Qurish',
-      body: 'Ikki haftalik sikllar, har birining oxirida ishlaydigan build. Siz progressni hisobotdan emas, qurilmadan koʻrasiz.',
+      body: 'Ikki haftalik sikllar, har birining oxirida ishlaydigan versiya. Siz progressni hisobotdan emas, qurilmadan koʻrasiz.',
       duration: 'Doimiy',
     },
     {
       title: 'Reliz',
-      body: 'Store’ga joylash, koʻrikni oʻtkazish va haqiqiy foydalanuvchilarning birinchi haftalari — muhim xatolar aynan shu yerda chiqadi.',
+      body: 'Ilovani doʻkonlarga joylash, moderatsiyadan oʻtkazish va haqiqiy foydalanuvchilarning birinchi haftalari — muhim xatolar aynan shu yerda chiqadi.',
       duration: 'Ishga tushirish',
     },
     {
       title: 'Qoʻllab-quvvatlash',
-      body: 'Kraş monitoringi, tuzatishlar va keyingi yoʻl xaritasi. Mahsulot hayotining koʻp qismi 1.0 versiyadan keyin oʻtadi.',
+      body: 'Xatoliklar monitoringi, tuzatishlar va keyingi yoʻl xaritasi. Mahsulot hayotining koʻp qismi 1.0 versiyadan keyin oʻtadi.',
       duration: 'Doimiy',
     },
   ],
@@ -371,7 +372,7 @@ export const uz: Dictionary = {
     },
     {
       quote:
-        'Men uchun eng qadrlisi loyihani skoplagan odamlar uni qurgan odamlar boʻlgani. Hech narsa topshiriqda yoʻqolmadi.',
+        'Men uchun eng qadrlisi loyiha hajmini belgilagan odamlar uni qurgan odamlar boʻlgani. Hech narsa topshiriqda yoʻqolmadi.',
       name: 'Mijoz nomi',
       role: 'Asoschi, Kompaniya',
     },
@@ -383,7 +384,7 @@ export const uz: Dictionary = {
     },
     {
       quote:
-        'Ikki haftalik build’lar kengashga slayd emas, haqiqiy progressni koʻrsatish imkonini berdi. Shuning oʻzi hamkorlikni oqladi.',
+        'Ikki haftada bir ishlaydigan versiya kengashga slayd emas, haqiqiy progressni koʻrsatish imkonini berdi. Shuning oʻzi hamkorlikni oqladi.',
       name: 'Mijoz nomi',
       role: 'Moliya direktori, Kompaniya',
     },
@@ -392,11 +393,11 @@ export const uz: Dictionary = {
   faq: [
     {
       q: 'Ilova qancha turadi?',
-      a: 'Biz oladigan koʻpchilik loyihalar $300 dan $3 000 gacha oraliqda. Oraliq keng, chunki uni platforma emas, skop belgilaydi: bitta maqsadli ilova quyi chetda, admin paneli bilan koʻp rolli mahsulot yuqori chetda turadi. Skoplash sessiyasidan keyin qanday farazlarga tayanganini koʻrsatgan yozma baho beramiz — va qaysi qismlarni qisqartirsa boʻlishini aytamiz.',
+      a: 'Biz oladigan koʻpchilik loyihalar $300 dan $3 000 gacha oraliqda. Oraliq keng, chunki uni platforma emas, ish hajmi belgilaydi: bitta maqsadli ilova quyi chetda, admin paneli bilan koʻp rolli mahsulot yuqori chetda turadi. Ish hajmini aniqlash uchrashuvidan keyin qanday farazlarga tayanganini koʻrsatgan yozma baho beramiz — va qaysi qismlarni qisqartirsa boʻlishini aytamiz.',
     },
     {
       q: 'Qancha vaqt oladi?',
-      a: 'Birinchi reliz odatda 3–5 oy: 2–4 hafta dizayn, keyin ikki haftalik qurish sikllari. Har ikki haftada haqiqiy qurilmada ishlaydigan build olasiz — progress oʻqiladigan narsa emas, ushlanadigan narsa.',
+      a: 'Birinchi reliz odatda 3–5 oy: 2–4 hafta dizayn, keyin ikki haftalik qurish sikllari. Har ikki haftada haqiqiy qurilmada ishlaydigan versiyani olasiz — progress oʻqiladigan narsa emas, ushlanadigan narsa.',
     },
     {
       q: 'Kod menikimi?',
@@ -408,7 +409,7 @@ export const uz: Dictionary = {
     },
     {
       q: 'Relizdan keyin nima boʻladi?',
-      a: 'Koʻpchilik mahsulotga 1.0 dan keyin ish kerak — kraş tuzatishlari, OS yangilanishlari, store siyosati oʻzgarishlari va haqiqiy foydalanish ochib beradigan funksiyalar. Biz oʻzimiz qurgan narsani yuritishda davom etamiz yoki oʻzingiz yuritmoqchi boʻlsangiz hujjatlar bilan jamoangizga topshiramiz.',
+      a: 'Koʻpchilik mahsulotga 1.0 dan keyin ish kerak — xatolik tuzatishlari, OS yangilanishlari, store siyosati oʻzgarishlari va haqiqiy foydalanish ochib beradigan funksiyalar. Biz oʻzimiz qurgan narsani yuritishda davom etamiz yoki oʻzingiz yuritmoqchi boʻlsangiz hujjatlar bilan jamoangizga topshiramiz.',
     },
     {
       q: 'Mavjud jamoamiz yoki kodimiz bilan ishlay olasizmi?',
@@ -417,9 +418,9 @@ export const uz: Dictionary = {
   ],
 
   about: {
-    title: 'Ishchi kuchi emas, mahsulot jamoasi.',
+    title: 'Bajaruvchi emas, sherik jamoa.',
     lede:
-      'Bir vaqtning oʻzida oz sonli loyiha olamiz, shuning uchun mahsulotingizni skoplagan odamlar uni quradigan odamlardir. Siz hech qachon koʻrmagan yetkazib berish jamoasiga topshiriq yoʻq.',
+      'Bir vaqtning oʻzida oz sonli loyiha olamiz, shuning uchun mahsulotingiz hajmini belgilagan odamlar uni quradigan odamlardir. Siz hech qachon koʻrmagan yetkazib berish jamoasiga topshiriq yoʻq.',
     story: [
       'wlans Toshkentda mahalliy bizneslar uchun Android ilovalar quradigan ikki kishilik shartnoma jamoasi sifatida boshlangan. Qaytib kelaveradigan ish hech qachon “shu ekranni qur” emas edi — “bu jarayon buzilgan, uni tuzatadigan dastur qil” edi. Biz hozir ham shu ishni olamiz.',
       'Bugun biz mobil ilovalar va veb ustida ishlaydigan muhandislar, dizaynerlar va QA jamoasimiz. Ataylab tor doirada qoldik: ikkita yoʻnalishni yaxshi bajarish oltitasini oʻrtacha bajarishdan afzal. Mavjud vositalar yetarlicha yaxshi boʻlmaganda oʻz vositalarimizni ichkarida quramiz.',
@@ -432,11 +433,11 @@ export const uz: Dictionary = {
       },
       {
         title: 'Hisobotdan koʻra ishlaydigan dastur',
-        body: 'Har ikki haftada haqiqiy qurilmada build olasiz. Progress — jadvaldagi foiz emas, qoʻlda ushlanadigan narsa.',
+        body: 'Har ikki haftada haqiqiy qurilmada ishlaydigan versiyani olasiz. Progress — jadvaldagi foiz emas, qoʻlda ushlanadigan narsa.',
       },
       {
         title: 'Bitta jamoa, boshidan oxirigacha',
-        body: 'Skoplash qoʻngʻirogʻidagi muhandislar kod yozadigan muhandislardir. Hech narsa tarjimada yoʻqolmaydi.',
+        body: 'Ish hajmini aniqlash uchrashuvidagi muhandislar kod yozadigan muhandislardir. Hech narsa tarjimada yoʻqolmaydi.',
       },
       {
         title: 'Hamma narsa sizniki',
@@ -455,12 +456,12 @@ export const uz: Dictionary = {
   ],
 
   projectTypes: [
-    'Mobil ilova (iOS / Android)',
-    'Kross-platforma ilova (Flutter)',
+    'Mobil ilova',
+    'Kross-platforma ilova',
     'Korporativ sayt',
     'Veb ilova',
-    'Biz qurmagan ilova ustida ish',
-    'Hali aniq emas',
+    'Tayyor ilovani takomillashtirish',
+    'Hali aniqlanmagan',
   ],
 
   budgetRanges: [
@@ -472,14 +473,14 @@ export const uz: Dictionary = {
     'Hali hal qilinmagan',
   ],
 
-  timelines: ['Imkon qadar tezroq', '3 oy ichida', '3–6 oy', 'Hozircha oʻrganyapman'],
+  timelines: ['Imkon qadar tez', '3 oy ichida', '3–6 oy', 'Hozircha oʻrganyapman'],
 
   rnd: {
     eyebrow: 'Ichki R&D',
     title: 'Mavjud vositalar yetarlicha yaxshi boʻlmaganda oʻz vositalarimizni yozamiz.',
     body:
       'Ulardan biri — Arduino sinfidagi qurilmalar uchun ochiq kodli displey freymvorki. U OLED va TFT panellarga render qiladi va har bir kadr shinada haqiqatda qanchaga tushishini koʻrsatadi — I²C orqali SSD1306 uchun toʻliq kadr taxminan 24 ms oladi, bu esa chip qanchalik tez boʻlmasin, sketchni 41 fps atrofida cheklaydi. Koʻpchilik buni qurilmada, kech bilib qoladi.',
-    ctaLabel: 'Freymvorkni koʻrish',
+    ctaLabel: 'Freymvork bilan tanishish',
   },
 
   nav: {
@@ -576,7 +577,7 @@ export const uz: Dictionary = {
         },
         quality: {
           name: 'Sifat',
-          body: 'Birinchi yomon sharhdan keyin emas, birinchi TestFlight build’idan boshlab avtomatik UI testlar va kraş hisoboti.',
+          body: 'Birinchi yomon sharhdan keyin emas, birinchi TestFlight versiyasidan boshlab avtomatik UI testlar va xatolik hisoboti.',
         },
       },
       caseStudy: {
@@ -623,7 +624,7 @@ export const uz: Dictionary = {
         },
         distribution: {
           name: 'Tarqatish',
-          body: 'Play Console sozlamasi, bosqichli chiqarish va reliz oldi hisobotlari — shuning uchun yomon build hammaga emas, foydalanuvchilarning 1% iga yetadi.',
+          body: 'Play Console sozlamasi, bosqichli chiqarish va reliz oldi hisobotlari — shuning uchun nosoz versiya hammaga emas, foydalanuvchilarning 1% iga yetadi.',
         },
       },
       caseStudy: {
@@ -654,7 +655,7 @@ export const uz: Dictionary = {
         { value: '1', label: 'Dizayn tizimi, ikkala platforma' },
       ],
       techIntro:
-        'Flutter ikkala platformada bitta render dvigatelini beradi, shuning uchun ekran ikkita implementatsiyani yuritmasdan bir xil koʻrinadi va bir xil ishlaydi.',
+        'Flutter ikkala platformada bitta chizish mexanizmini beradi, shuning uchun ekran ikkita implementatsiyani yuritmasdan bir xil koʻrinadi va bir xil ishlaydi.',
       tech: {
         flutter: {
           name: 'Flutter va Dart',
@@ -752,9 +753,9 @@ export const uz: Dictionary = {
     learnMore: 'Batafsil',
     allProjects: 'Barcha loyihalar',
     allServices: 'Barcha xizmatlar',
-    viewMoreProjects: 'Koʻproq loyiha koʻrish',
-    readCaseStudy: 'Keys-stadini oʻqish',
-    bookCall: 'Qoʻngʻiroqqa yozilish',
+    viewMoreProjects: 'Boshqa loyihalarni koʻrish',
+    readCaseStudy: 'Loyiha tafsilotini oʻqish',
+    bookCall: 'Suhbatga yozilish',
     orderProject: 'Loyiha buyurtma qilish',
     seeRelatedWork: 'Tegishli ishlarni koʻrish',
     homeCrumb: 'Bosh sahifa',
@@ -762,8 +763,8 @@ export const uz: Dictionary = {
 
     home: {
       servicesEyebrow: 'Nima qilamiz',
-      servicesTitle: 'Mobil va veb —',
-      servicesAccent: 'sifatli qilib.',
+      servicesTitle: 'Mobil va veb ilovalar —',
+      servicesAccent: 'puxta ishlangan.',
       servicesLede:
         'Oʻnta emas, ikkita yoʻnalish. iOS va Android uchun native ilovalar, mos kelgan joyda bitta Flutter kodbazasi va ular atrofidagi veb-saytlar hamda veb ilovalar.',
       workEyebrow: 'Tanlangan ishlar',
@@ -780,13 +781,13 @@ export const uz: Dictionary = {
       processTitle: 'Formani yuborganingizdan',
       processAccent: 'keyin nima boʻladi.',
       processLede:
-        'Har bir yangi mijozda aslida shu savol bor. Ikki haftalik sikllar, har birining oxirida ishlaydigan build va kod yozilmasidan avval yozma skop.',
+        'Har bir yangi mijozda aslida shu savol bor. Ikki haftalik sikllar, har birining oxirida ishlaydigan versiya va kod yozilmasidan avval yozma ish hajmi.',
       clientsEyebrow: 'Mijozlar',
       clientsTitle: 'Biz bilan ishlash haqida',
       clientsAccent: 'odamlar nima deydi.',
       stackEyebrow: 'Texnologiya',
-      stackTitle: 'Modda boʻlganini emas,',
-      stackAccent: 'mos keladiganini ishlatamiz.',
+      stackTitle: 'Modaga emas,',
+      stackAccent: 'vazifaga qarab tanlaymiz.',
       stackLede:
         'Quyidagi har bir tanlov — prodakshnda ishlatadigan va ikki yildan keyin ham qoʻllab-quvvatlay oladigan tanlovimiz.',
       faqEyebrow: 'Savollar',
@@ -794,13 +795,13 @@ export const uz: Dictionary = {
       faqAccent: 'savollarga javoblar.',
       ctaTitle: 'Gʻoyangiz bormi? Nima talab qilishini aytamiz.',
       ctaLede:
-        'Mahsulot nima qilishi kerakligini ayting. Skop boʻyicha bahomiz va taxminiy oraliq bilan javob beramiz.',
+        'Mahsulot nima qilishi kerakligini ayting. Ish hajmi boʻyicha bahomiz va taxminiy oraliq bilan javob beramiz.',
     },
 
     servicesPage: {
       eyebrow: 'Xizmatlar',
-      title: 'Mobil va veb —',
-      accent: 'sifatli qilib.',
+      title: 'Mobil va veb ilovalar —',
+      accent: 'puxta ishlangan.',
       lede:
         'Biz mobil ilovalar va ular atrofidagi vebni quramiz. Infratuzilma, DevOps yoki alohida dizayn xizmatini sotmaymiz — loyihaga shular kerak boʻlsa, buni aytamiz va kim qilishini koʻrsatamiz.',
       industriesEyebrow: 'Sohalar',
@@ -808,9 +809,9 @@ export const uz: Dictionary = {
       industriesAccent: 'avval ham ishlaganmiz.',
       processEyebrow: 'Qanday ishlaymiz',
       processTitle: 'Olti bosqich va har birida',
-      processAccent: 'build koʻrasiz.',
+      processAccent: 'natijani koʻrasiz.',
       stackEyebrow: 'Texnologiya',
-      stackTitle: 'Nima bilan quramiz.',
+      stackTitle: 'Nima bilan ishlaymiz.',
       faqEyebrow: 'Savollar',
       faqTitle: 'Odamlar birinchi soʻraydigan',
       faqAccent: 'savollarga javoblar.',
@@ -830,7 +831,7 @@ export const uz: Dictionary = {
       workAccent: 'koʻrinadi.',
       processEyebrow: 'Qanday ishlaymiz',
       processTitle: 'Olti bosqich va har birida',
-      processAccent: 'build koʻrasiz.',
+      processAccent: 'natijani koʻrasiz.',
       faqEyebrow: 'Savollar',
       faqTitle: 'Odamlar birinchi soʻraydigan',
       faqAccent: 'savollarga javoblar.',
@@ -841,15 +842,15 @@ export const uz: Dictionary = {
 
     companyPage: {
       eyebrow: 'Kompaniya',
-      title: 'Ishchi kuchi emas,',
-      accent: 'mahsulot jamoasi.',
+      title: 'Bajaruvchi emas,',
+      accent: 'sherik jamoa.',
       storyEyebrow: 'Bizning hikoyamiz',
       valuesEyebrow: 'Qanday fikrlaymiz',
       valuesTitle: 'Murosaga bormaydigan',
       valuesAccent: 'toʻrtta narsa.',
       processEyebrow: 'Qanday ishlaymiz',
       processTitle: 'Olti bosqich va har birida',
-      processAccent: 'build koʻrasiz.',
+      processAccent: 'natijani koʻrasiz.',
       processLede:
         'Hech bir bosqich hisobot bilan tugamaydi. Har biri siz ochib, bosib, oʻzingiz baholay oladigan narsa bilan tugaydi.',
       clientsEyebrow: 'Mijozlar',
@@ -868,8 +869,8 @@ export const uz: Dictionary = {
       title: 'Nima qurayotganingizni',
       accent: 'ayting.',
       lede:
-        'Boshlash uchun qisqa brif yetarli. Skop boʻyicha halol baho, taxminiy oraliq va shu ish uchun toʻgʻri jamoa ekanimiz bilan javob beramiz — javob “yoʻq” boʻlgan holatni ham qoʻshib.',
-      briefTitle: 'Loyiha brifi',
+        'Boshlash uchun qisqa tavsif yetarli. Ish hajmi boʻyicha halol baho, taxminiy oraliq va shu ish uchun toʻgʻri jamoa ekanimiz bilan javob beramiz — javob “yoʻq” boʻlgan holatni ham qoʻshib.',
+      briefTitle: 'Loyiha haqida qisqacha',
       preferToTalk: 'Gaplashishni afzal koʻrasizmi?',
       telegram: 'Telegram',
       email: 'Email',
@@ -877,7 +878,7 @@ export const uz: Dictionary = {
       whatHappensNext: 'Keyin nima boʻladi',
       beforeYouWrite: 'Yozishdan oldin',
       beforeYouWriteBody:
-        'Sizga texnik topshiriq kerak emas. Eng foydali brif uchta savolga javob beradi: foydalanuvchilar kim, ular bugun nima qila olmaydi va loyiha muvaffaqiyatli hisoblanishi uchun nima toʻgʻri boʻlishi kerak. Qolganini birga hal qilamiz.',
+        'Sizga texnik topshiriq kerak emas. Eng foydali soʻrov uchta savolga javob beradi: foydalanuvchilar kim, ular bugun nima qila olmaydi va loyiha muvaffaqiyatli hisoblanishi uchun nima toʻgʻri boʻlishi kerak. Qolganini birga hal qilamiz.',
     },
 
     workPage: {
@@ -888,7 +889,7 @@ export const uz: Dictionary = {
         'Soha boʻyicha filtrlang. Har bir loyiha bir xil yoziladi: nima qiyin boʻlgan, nimani tanlagan va nima oʻlchanadigan darajada oʻzgargan.',
       ctaTitle: 'Shunga oʻxshash narsa qurilishini xohlaysizmi?',
       ctaLede:
-        'Mahsulot nima qilishi kerakligini ayting. Skop boʻyicha bahomiz va taxminiy oraliq bilan javob beramiz.',
+        'Mahsulot nima qilishi kerakligini ayting. Ish hajmi boʻyicha bahomiz va taxminiy oraliq bilan javob beramiz.',
     },
 
     tabs: {
@@ -904,7 +905,7 @@ export const uz: Dictionary = {
       frameworkBody:
         'OLED va TFT panellar uchun 1-bitli render yadrosi. U oʻzgargan hududlarni kuzatadi, shuning uchun kichik oʻzgarish toʻliq kadr emas, bir hovuch bayt yuboradi — va har bir flush sozlangan shinada haqiqatda qanchaga tushishini koʻrsatadi.',
       panelBody:
-        'Shu matn yonidagi panel — oʻsha dvigatelning oʻzi, TypeScript’ga kompilyatsiya qilingan va brauzeringizda ishlab turibdi. Ostidagi raqamlar bezak emas, oʻlchangan qiymatlar.',
+        'Yonidagi panel — oʻsha kodning oʻzi: TypeScript’ga oʻgirilgan va hozir sizning brauzeringizda ishlab turibdi. Ostidagi raqamlar bezak uchun emas, shu daqiqada oʻlchangan.',
       cta: 'Loyiha boʻyicha bogʻlanish',
     },
 
@@ -931,18 +932,18 @@ export const uz: Dictionary = {
     },
 
     serviceDetail: {
-      statsTitleLead: 'wlans jamoasi bilan',
+      statsTitleLead: 'wlans jamoasi bilan gʻoyangizni',
       statsTitleAccent: 'hayotga',
-      statsTitleTail: 'gʻoyangizni tatbiq qiling.',
+      statsTitleTail: 'tatbiq qiling.',
       techEyebrow: 'Texnologiya',
       techTitle: 'Nima bilan',
       techAccent: 'quramiz.',
-      caseEyebrow: 'Keys-stadi',
+      caseEyebrow: 'Loyiha tafsiloti',
       caseTitle: 'Muvaffaqiyatli ishlab chiqilgan',
       caseAccent: 'ilovalar',
       processEyebrow: 'Qanday ishlaymiz',
       processTitle: 'Olti bosqich va har birida',
-      processAccent: 'build koʻrasiz.',
+      processAccent: 'natijani koʻrasiz.',
       relatedEyebrow: 'Tegishli',
       relatedTitle: 'Biz quradigan boshqa narsalar.',
       faqEyebrow: 'Savollar',
@@ -953,9 +954,28 @@ export const uz: Dictionary = {
     gallery: {
       filterProjects: 'Loyihalarni filtrlash',
       emptyCategory: 'Bu toifada hali loyiha yoʻq.',
-      caseStudyBadge: 'Keys-stadi',
+      caseStudyBadge: 'Loyiha tafsiloti',
       appStore: 'App Store',
       googlePlay: 'Google Play',
+    },
+
+    screens: {
+      minutes: 'daq',
+      enRoute: 'Yoʻlda',
+      orderNo: 'Buyurtma',
+      courier: 'Kuryer',
+      trackOrder: 'Buyurtmani kuzatish',
+      balance: 'Balans',
+      topUp: 'Toʻldirish',
+      send: 'Oʻtkazma',
+      pay: 'Toʻlov',
+      more: 'Yana',
+      recent: 'Soʻnggilari',
+      all: 'Hammasi',
+      search: 'Qidiruv',
+      popular: 'Ommabop',
+      slots: 'Boʻsh vaqtlar',
+      book: 'Band qilish',
     },
 
     rail: {
@@ -967,6 +987,8 @@ export const uz: Dictionary = {
     },
 
     form: {
+      groupYou: 'Siz haqingizda',
+      groupProject: 'Loyiha haqida',
       name: 'Ismingiz',
       namePlaceholder: 'Aziz Karimov',
       email: 'Email',
@@ -977,22 +999,23 @@ export const uz: Dictionary = {
       contactPlaceholder: '+998 90 000 00 00 yoki @username',
       contactHint: 'Ixtiyoriy — koʻpincha emaildan tezroq',
       optional: 'Ixtiyoriy',
-      projectType: 'Sizga nima kerak?',
+      projectType: 'Loyiha turi',
       budget: 'Byudjet',
       timeline: 'Muddat',
-      message: 'Loyiha haqida',
+      message: 'Nima qilmoqchisiz?',
       messagePlaceholder:
         'Bizda yetkazib berish biznesi bor va kuryerlarimiz hamon qogʻoz roʻyxat bilan ishlaydi…',
-      submit: 'Brifni yuborish',
+      submit: 'Soʻrovni yuborish',
       submitting: 'Yuborilmoqda…',
-      successTitle: 'Rahmat — brifingiz yetib keldi.',
+      successTitle: 'Rahmat — soʻrovingiz qabul qilindi.',
       successBody: 'Bir ish kuni ichida javob beramiz.',
+      successRefLabel: 'Ariza raqami',
       errorTitle: 'Yuborilmadi. Iltimos, qayta urinib koʻring.',
       website: 'Veb-sayt',
     },
 
     notices: {
-    notFound: 'Bunday sahifa yoʻq yoki koʻchirilgan. Biz quradigan hamma narsa quyida, bir bosishda.',
+      notFound: 'Bunday sahifa yoʻq yoki koʻchirilgan. Biz quradigan hamma narsa quyida, bir bosishda.',
       placeholderProjects:
         'Generatsiya qilingan grafikali namunaviy loyihalar. Haqiqiy mijozlar va skrinshotlar shu yerga:',
       placeholderQuotes:

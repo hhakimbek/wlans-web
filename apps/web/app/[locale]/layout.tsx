@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Manrope } from 'next/font/google'
+import { IBM_Plex_Mono, Onest } from 'next/font/google'
 import { notFound } from 'next/navigation'
 
 import { MOTION_TIER_SCRIPT } from '@wlans/design-tokens'
@@ -15,13 +15,23 @@ import { SITE_URL } from '@/lib/seo'
 import '../globals.css'
 
 /* Subsets are explicit. `cyrillic` is required by the Russian locale;
-   `latin-ext` carries the Uzbek modifier letter in oʻ / gʻ. next/font emits one
-   @font-face per subset with a unicode-range, so an English visitor never
-   downloads Cyrillic. Manrope is variable, so the whole 400–800 range is a
-   single file per subset. */
-const manrope = Manrope({
+   `latin-ext` carries the accented Latin the Uzbek and Russian transliterations
+   use. next/font emits one @font-face per subset with a unicode-range, so an
+   English visitor never downloads Cyrillic.
+
+   Onest is variable, so 400–800 is a single file per subset rather than five
+   static weights. Plex Mono ships two weights and Latin only: it is used for
+   labels, units and code, none of which are translated. */
+const onest = Onest({
   subsets: ['latin', 'latin-ext', 'cyrillic'],
-  variable: '--font-manrope',
+  variable: '--font-onest',
+  display: 'swap',
+})
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500'],
+  variable: '--font-plex-mono',
   display: 'swap',
 })
 
@@ -65,8 +75,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-    { media: '(prefers-color-scheme: dark)', color: '#14181D' },
+    { media: '(prefers-color-scheme: light)', color: '#FAFBFC' },
+    { media: '(prefers-color-scheme: dark)', color: '#0E1218' },
   ],
 }
 
@@ -85,7 +95,7 @@ export default async function RootLayout({
   const services = getServiceDefs(locale)
 
   return (
-    <html lang={localeTags[locale]} className={manrope.variable}>
+    <html lang={localeTags[locale]} className={`${onest.variable} ${plexMono.variable}`}>
       <head>
         {/* Resolved before first paint. Running this after hydration would show
             a flash of full motion on a device that asked for none. */}

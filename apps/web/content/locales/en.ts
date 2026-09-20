@@ -16,6 +16,7 @@ export const en: Dictionary = {
   },
 
   hero: {
+    eyebrow: 'Product engineering · Tashkent',
     titleLead: 'We build mobile apps',
     titleAccent: 'that ship.',
     lede:
@@ -450,8 +451,8 @@ export const en: Dictionary = {
   ],
 
   projectTypes: [
-    'Mobile app (iOS / Android)',
-    'Cross-platform app (Flutter)',
+    'Mobile app',
+    'Cross-platform app',
     'Company website',
     'Web application',
     'Work on an app we did not build',
@@ -926,9 +927,9 @@ export const en: Dictionary = {
     },
 
     serviceDetail: {
-      statsTitleLead: 'Bring your',
+      statsTitleLead: 'Bring your idea',
       statsTitleAccent: 'to life',
-      statsTitleTail: 'idea with the wlans team.',
+      statsTitleTail: 'with the wlans team.',
       techEyebrow: 'Technology',
       techTitle: 'What we build it',
       techAccent: 'with.',
@@ -953,6 +954,25 @@ export const en: Dictionary = {
       googlePlay: 'Google Play',
     },
 
+    screens: {
+      minutes: 'min',
+      enRoute: 'On the way',
+      orderNo: 'Order',
+      courier: 'Courier',
+      trackOrder: 'Track order',
+      balance: 'Balance',
+      topUp: 'Top up',
+      send: 'Send',
+      pay: 'Pay',
+      more: 'More',
+      recent: 'Recent',
+      all: 'All',
+      search: 'Search',
+      popular: 'Popular',
+      slots: 'Free slots',
+      book: 'Book',
+    },
+
     rail: {
       previous: 'Previous reviews',
       next: 'More reviews',
@@ -962,6 +982,8 @@ export const en: Dictionary = {
     },
 
     form: {
+      groupYou: 'About you',
+      groupProject: 'About the project',
       name: 'Your name',
       namePlaceholder: 'Aziz Karimov',
       email: 'Email',
@@ -982,12 +1004,13 @@ export const en: Dictionary = {
       submitting: 'Sending…',
       successTitle: 'Thank you — your brief is in.',
       successBody: 'We reply within one working day.',
+      successRefLabel: 'Reference',
       errorTitle: 'That did not send. Please try again.',
       website: 'Website',
     },
 
     notices: {
-    notFound: 'That page does not exist, or it has moved. Everything we build is one tap away below.',
+      notFound: 'That page does not exist, or it has moved. Everything we build is one tap away below.',
       placeholderProjects:
         'Placeholder projects with generated artwork. Real clients and screenshots go in',
       placeholderQuotes:

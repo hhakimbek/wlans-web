@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArrowRight, Clock, Mail, MapPin, MessageCircle, Phone } from 'lucide-react'
 
+import Image from 'next/image'
+
 import { ButtonLink } from '@/components/ui/button'
 import { VideoModal } from '@/components/ui/video-modal'
-import { AppScreen } from '@/components/marketing/app-screen'
 import { Notice } from '@/components/marketing/notice'
 import {
   Process,
@@ -85,9 +86,12 @@ export default async function CompanyPage({ params }: Params) {
             title={showreel.title}
             variant="thumbnail"
             poster={
-              <span className="video-thumb__art">
-                <AppScreen hue={263} variant="dash" />
-              </span>
+              <Image
+                src="/img/studio.jpg"
+                alt=""
+                fill
+                sizes="(max-width: 900px) 100vw, 520px"
+              />
             }
           />
         </div>
@@ -151,6 +155,19 @@ export default async function CompanyPage({ params }: Params) {
                 <MapPin size={16} aria-hidden="true" /> {company.address}
               </li>
             </ul>
+
+            <figure className="place">
+              <Image
+                src="/img/tashkent.jpg"
+                alt={t.whereToFindUs}
+                fill
+                sizes="(max-width: 980px) 100vw, 560px"
+              />
+              <figcaption className="place__caption">
+                <MapPin size={16} strokeWidth={2.4} aria-hidden="true" />
+                {offices[0] ? offices[0].city + ', ' + offices[0].country : company.address}
+              </figcaption>
+            </figure>
           </div>
 
           <div className="card card--soft">

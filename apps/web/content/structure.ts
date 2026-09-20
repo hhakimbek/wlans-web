@@ -36,10 +36,20 @@ export const industryKeys = [
   { slug: 'enterprise', icon: 'building-2' },
 ] as const
 
+/* `photo` is the environment the product runs in — a courier in traffic, a
+   payment at a counter. It is deliberately NOT a screenshot of the client's
+   app: those do not exist yet, and inventing one would be a fabricated
+   credential. A photograph of the operating conditions is honest and is what
+   makes the constraint in the summary legible at a glance.
+   `screen` picks which illustrative interface the device renders; `shots` are
+   the photos used inside it where that screen shows imagery — a grid needs
+   more than one, or it reads as the same picture printed six times. */
 /** `category` indexes into `workCategoryKeys`, not into a translated label. */
 export const workKeys = [
   {
     slug: 'delivery-platform',
+    screen: 'track',
+    photo: '/img/work-logistics.jpg',
     category: 'logistics',
     stack: ['Flutter', 'NestJS', 'PostgreSQL'],
     hue: 263,
@@ -48,6 +58,8 @@ export const workKeys = [
   },
   {
     slug: 'digital-wallet',
+    screen: 'finance',
+    photo: '/img/work-fintech.jpg',
     category: 'fintech',
     stack: ['Swift', 'Kotlin', 'PostgreSQL'],
     hue: 220,
@@ -56,6 +68,9 @@ export const workKeys = [
   },
   {
     slug: 'clinic-booking',
+    screen: 'schedule',
+    photo: '/img/work-health.jpg',
+    shots: ['/img/shot-doctor.jpg'],
     category: 'health',
     stack: ['Flutter', 'Node.js', 'Postgres'],
     hue: 150,
@@ -64,6 +79,9 @@ export const workKeys = [
   },
   {
     slug: 'retail-loyalty',
+    screen: 'catalog',
+    photo: '/img/work-retail.jpg',
+    shots: ['/img/shot-retail.jpg', '/img/shot-retail-b.jpg'],
     category: 'retail',
     stack: ['React Native', 'NestJS'],
     hue: 30,
@@ -72,6 +90,9 @@ export const workKeys = [
   },
   {
     slug: 'learning-platform',
+    screen: 'catalog',
+    photo: '/img/work-education.jpg',
+    shots: ['/img/shot-course.jpg', '/img/shot-course-b.jpg'],
     category: 'education',
     stack: ['Flutter', 'Node.js', 'PostgreSQL'],
     hue: 300,
@@ -80,6 +101,8 @@ export const workKeys = [
   },
   {
     slug: 'field-service',
+    screen: 'track',
+    photo: '/img/work-enterprise.jpg',
     category: 'enterprise',
     stack: ['Kotlin', 'Next.js', 'Postgres'],
     hue: 240,
@@ -133,6 +156,7 @@ export const rndCta = '/rnd'
 export const serviceDefKeys = [
   {
     slug: 'mobile-app-development',
+    screens: ['track', 'finance', 'catalog'] as const,
     icon: 'smartphone',
     group: 'Mobile',
     hue: 263,
@@ -146,6 +170,7 @@ export const serviceDefKeys = [
   },
   {
     slug: 'ios-development',
+    screens: ['finance', 'schedule', 'track'] as const,
     icon: 'apple',
     group: 'Mobile',
     hue: 220,
@@ -159,6 +184,7 @@ export const serviceDefKeys = [
   },
   {
     slug: 'android-development',
+    screens: ['schedule', 'catalog', 'finance'] as const,
     icon: 'android',
     group: 'Mobile',
     hue: 150,
@@ -172,6 +198,7 @@ export const serviceDefKeys = [
   },
   {
     slug: 'cross-platform-development',
+    screens: ['catalog', 'track', 'schedule'] as const,
     icon: 'layers',
     group: 'Mobile',
     hue: 190,
@@ -185,6 +212,7 @@ export const serviceDefKeys = [
   },
   {
     slug: 'web-app-development',
+    screens: ['finance', 'catalog', 'track'] as const,
     icon: 'globe',
     group: 'Web',
     hue: 280,

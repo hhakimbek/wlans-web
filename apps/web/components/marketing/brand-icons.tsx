@@ -24,6 +24,7 @@ export function AppleMark({ size = 16, className }: MarkProps) {
       height={size}
       fill="currentColor"
       className={className}
+      data-brand="apple"
       aria-hidden="true"
       focusable="false"
     >
@@ -75,6 +76,7 @@ export function AndroidMark({ size = 16, className }: MarkProps) {
       height={size}
       fill="currentColor"
       className={className}
+      data-brand="android"
       aria-hidden="true"
       focusable="false"
     >

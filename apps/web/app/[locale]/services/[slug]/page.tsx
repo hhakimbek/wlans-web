@@ -6,6 +6,7 @@ import { ArrowRight, Check, ChevronRight } from 'lucide-react'
 import { ButtonLink } from '@/components/ui/button'
 import { Accordion } from '@/components/ui/accordion'
 import { AppScreen } from '@/components/marketing/app-screen'
+import { Device } from '@/components/marketing/device'
 import { TechTag } from '@/components/marketing/tech-tag'
 import { Notice } from '@/components/marketing/notice'
 import { ServiceIcon } from '@/components/marketing/service-icon'
@@ -78,7 +79,7 @@ export default async function ServiceDetailPage({ params }: Params) {
             <h1 className="service-hero__title">
               {service.heading}{' '}
               {service.headingAccent ? (
-                <span className="grad-text">{service.headingAccent}</span>
+                <span className="accent-text">{service.headingAccent}</span>
               ) : null}
             </h1>
 
@@ -105,15 +106,15 @@ export default async function ServiceDetailPage({ params }: Params) {
           </div>
 
           <div className="service-hero__art" aria-hidden="true">
-            <span className="service-hero__phone service-hero__phone--left">
-              <AppScreen hue={service.hue} variant="list" />
-            </span>
-            <span className="service-hero__phone service-hero__phone--mid">
-              <AppScreen hue={service.hue} variant="dash" />
-            </span>
-            <span className="service-hero__phone service-hero__phone--right">
-              <AppScreen hue={service.hue} variant="map" />
-            </span>
+            <Device className="service-hero__phone service-hero__phone--left">
+              <AppScreen variant={service.screens[0]} hue={service.hue} s={ui.screens} />
+            </Device>
+            <Device className="service-hero__phone service-hero__phone--mid">
+              <AppScreen variant={service.screens[1]} hue={service.hue} s={ui.screens} />
+            </Device>
+            <Device className="service-hero__phone service-hero__phone--right">
+              <AppScreen variant={service.screens[2]} hue={service.hue} s={ui.screens} />
+            </Device>
           </div>
         </div>
       </section>
@@ -123,8 +124,8 @@ export default async function ServiceDetailPage({ params }: Params) {
         <div className="container stats-layout">
           <div>
             <h2 className="section__title">
-              {t.statsTitleLead} {service.title.toLowerCase()}{' '}
-              <span className="grad-text">{t.statsTitleAccent}</span> {t.statsTitleTail}
+              {t.statsTitleLead} <span className="accent-text">{t.statsTitleAccent}</span>{' '}
+              {t.statsTitleTail}
             </h2>
             <p className="section__lede">{service.summary}</p>
             <Notice>
@@ -195,12 +196,12 @@ export default async function ServiceDetailPage({ params }: Params) {
               {service.caseStudy.badge ? (
                 <span className="case__badge">{service.caseStudy.badge}</span>
               ) : null}
-              <span className="case__phone case__phone--back">
-                <AppScreen hue={service.caseStudy.hue} variant="dash" />
-              </span>
-              <span className="case__phone case__phone--front">
-                <AppScreen hue={service.caseStudy.hue} variant="list" />
-              </span>
+              <Device className="case__phone case__phone--back">
+                <AppScreen variant={service.screens[1]} hue={service.caseStudy.hue} s={ui.screens} />
+              </Device>
+              <Device className="case__phone case__phone--front">
+                <AppScreen variant={service.screens[0]} hue={service.caseStudy.hue} s={ui.screens} />
+              </Device>
             </div>
           </div>
           <div className="section__cta">

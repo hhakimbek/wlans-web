@@ -47,6 +47,7 @@ export function getSite(locale: Locale): SiteContent {
     showreel: { youtubeId: S.showreelId, ...d.showreel },
 
     hero: {
+      eyebrow: d.hero.eyebrow,
       titleLead: d.hero.titleLead,
       titleAccent: d.hero.titleAccent,
       lede: d.hero.lede,
@@ -70,6 +71,9 @@ export function getSite(locale: Locale): SiteContent {
         category: d.workCategories[w.category],
         stack: [...w.stack],
         hue: w.hue,
+        photo: w.photo,
+        screen: w.screen,
+        shots: 'shots' in w ? (w.shots as readonly string[]) : undefined,
         stores: { ...w.stores },
         placeholder: w.placeholder,
         client: copy.client,
@@ -137,6 +141,7 @@ export function getServiceDefs(locale: Locale): ServiceDef[] {
       slug: s.slug,
       icon: s.icon,
       hue: s.hue,
+      screens: s.screens,
       group: d.serviceGroups[s.group],
       title: copy.title,
       shortTitle: copy.shortTitle,

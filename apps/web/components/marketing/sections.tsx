@@ -81,7 +81,7 @@ export function SectionHead({
         {accent ? (
           <>
             {' '}
-            <span className="grad-text">{accent}</span>
+            <span className="accent-text">{accent}</span>
           </>
         ) : null}
       </h2>

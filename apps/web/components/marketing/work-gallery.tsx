@@ -1,39 +1,59 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { Star } from 'lucide-react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { ArrowUpRight, Star } from 'lucide-react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 
-import { AppleMark, GooglePlayMark } from './brand-icons'
 import { AppScreen } from './app-screen'
+import { AppleMark, GooglePlayMark } from './brand-icons'
+import { Device } from './device'
 import { ServiceIcon } from './service-icon'
-import type { Project } from '@/content/types'
-import type { GalleryStrings } from '@/content/types'
+import type { GalleryStrings, Project, ScreenStrings, ScreenVariant } from '@/content/types'
 import { localePath, type Locale } from '@/i18n'
 
 /**
  * Filterable project gallery.
  *
- * Two ideas from the reference, both about state being legible:
+ * The card is the site's signature block, and it is laid out the way a buyer
+ * actually reads a portfolio: the facts on paper on the left, the product
+ * standing on the right. Category, name, what was hard, how it is rated in
+ * the stores, what measurably changed — five facts, in the order they get
+ * scanned, with the hardware carrying the proof.
  *
- * 1. The selected filter is marked by ONE indicator that slides between
- *    chips, not by a background toggling on each chip. That makes the
- *    selection read as a single object moving. It animates with
- *    `translateX` + `scaleX` only — `left`/`width` would relayout every frame.
+ * What changed, and why: the previous card gave the top two thirds of itself
+ * to a photograph with one small phone parked in it. The photograph is still
+ * here — it is the honest thing to show, because a screenshot of a client's
+ * product would be a fabricated credential — but it is now a backdrop that
+ * dissolves into the paper rather than a picture the card is built around.
+ * That bought back the vertical space the store ratings and the result line
+ * needed, and it is why two devices now fit where one used to.
  *
- * 2. A project card inverts to the brand colour on hover or focus, the phones
- *    lift clear of the card, and the client quote drops out below it. The
- *    quote is always in the DOM (so it is findable and screen-reader
- *    accessible); only its transform and opacity change.
+ * The lead project carries ITS OWN hue as the card ground. That is the page's
+ * whole thesis stated once per view: the site is the frame, the work is the
+ * colour. Filter to Retail and the lead card turns warm — the colour is the
+ * project's, not the brand's.
+ *
+ * Motion, in three places and nowhere else:
+ *   · arrival — cards animate in on first paint with a capped stagger. Pure
+ *     CSS, so it never waits for hydration and never flashes.
+ *   · filter — the grid is keyed on the active filter, so switching remounts
+ *     the list and replays that same arrival. One mechanism, two moments.
+ *   · hover — the card lifts, the two devices separate at different rates,
+ *     and the case-study cue fills. Transform and opacity only, fine pointer
+ *     only, every duration from the motion tokens.
+ *
+ * The filter itself is still marked by ONE indicator sliding between chips
+ * rather than by each chip toggling its own background — that is what makes
+ * the selection read as a single object moving. It animates with `translateX`
+ * and `scaleX` only; `left`/`width` would relayout every frame.
  */
-
-const VARIANTS = ['list', 'dash', 'map'] as const
-
 export function WorkGallery({
   locale,
   projects,
   categories,
   ui,
+  screens,
   limit,
   showFilters = true,
 }: {
@@ -41,6 +61,7 @@ export function WorkGallery({
   projects: Project[]
   categories: { label: string; icon: string }[]
   ui: GalleryStrings
+  screens: ScreenStrings
   limit?: number
   showFilters?: boolean
 }) {
@@ -102,7 +123,7 @@ export function WorkGallery({
                 className="chip"
                 onClick={() => setActive(category.label)}
               >
-                <ServiceIcon name={category.icon} size={16} />
+                <ServiceIcon name={category.icon} size={14} />
                 {category.label}
               </button>
             )
@@ -110,15 +131,20 @@ export function WorkGallery({
         </div>
       ) : null}
 
-      <div className="showcase">
+      {/* Keyed on the filter: switching category remounts the list, which
+          replays the CSS arrival on every surviving card. A filter that
+          swaps its results with no motion reads as a page reload. */}
+      <div className="tiles" key={active}>
         {items.map((project, index) => (
-          <ProjectCard
+          <ProjectTile
             key={project.slug}
             project={project}
+            lead={index === 0}
             index={index}
             locale={locale}
             categories={categories}
             ui={ui}
+            screens={screens}
           />
         ))}
       </div>
@@ -128,110 +154,164 @@ export function WorkGallery({
   )
 }
 
-function ProjectCard({
+function ProjectTile({
   project,
+  lead,
   index,
   locale,
   categories,
   ui,
+  screens,
 }: {
   project: Project
+  /** The first card runs full width, carries the project's hue, and quotes. */
+  lead: boolean
+  /** Drives the arrival stagger. Capped, so item 12 is not a second late. */
   index: number
   locale: Locale
   categories: { label: string; icon: string }[]
   ui: GalleryStrings
+  screens: ScreenStrings
 }) {
-  // Wrapper, not a bare card: the quote used to sit *on top* of the card and
-  // covered the store ratings on hover. It now drops out below the card, so
-  // nothing the card shows is ever occluded. Hover state is driven from the
-  // wrapper because the quote is a sibling of the card, not a child of it.
+  const stores = project.stores
+
   return (
-    <div className="showcase-item">
-      <Link
-        href={localePath(locale, '/work/' + project.slug)}
-        className="showcase-card"
-        data-placeholder={project.placeholder}
-        style={{ ['--card-hue' as string]: String(project.hue) }}
-      >
-        <div className="showcase-card__body">
-          <span className="showcase-card__tag">
-            <ServiceIcon name={categoryIcon(categories, project.category)} size={14} />
-            {project.industry}
-          </span>
+    <article
+      className="tile"
+      data-lead={lead}
+      data-placeholder={project.placeholder}
+      style={{
+        ['--card-hue' as string]: String(project.hue),
+        ['--i' as string]: String(Math.min(index, 5)),
+      }}
+    >
+      {/* The backdrop, not the subject: it fades in from the left rather than
+          meeting the paper at a seam, so the devices read as standing in the
+          card instead of next to a photograph. */}
+      <div className="tile__stage" aria-hidden="true">
+        <span className="tile__photo">
+          <Image
+            src={project.photo}
+            alt=""
+            fill
+            sizes={lead ? '(max-width: 899px) 100vw, 560px' : '(max-width: 899px) 100vw, 300px'}
+            priority={lead}
+          />
+        </span>
 
-          <h3 className="showcase-card__title">
-            <span className="showcase-card__mark" aria-hidden="true">
-              {project.client.charAt(0)}
-            </span>
+        {/* Two screens, never the same one twice: a map beside a wallet reads
+            as a portfolio, the same screen printed twice reads as a mistake. */}
+        <span className="tile__cluster">
+          <Device className="tile__device tile__device--back">
+            <AppScreen
+              variant={pairScreen(project.screen)}
+              hue={project.hue}
+              photos={project.shots}
+              s={screens}
+            />
+          </Device>
+          <Device className="tile__device tile__device--front">
+            <AppScreen
+              variant={project.screen}
+              hue={project.hue}
+              photos={project.shots}
+              s={screens}
+            />
+          </Device>
+        </span>
+      </div>
+
+      <div className="tile__body">
+        <p className="tile__tag">
+          <ServiceIcon name={categoryIcon(categories, project.category)} size={13} />
+          {project.industry}
+        </p>
+
+        {/* The link is on the name, and its ::after covers the card. The whole
+            card is still one click target, but the link is announced as the
+            project name rather than as the entire card read aloud. */}
+        <h3 className="tile__client">
+          <Link href={localePath(locale, '/work/' + project.slug)} className="tile__link">
             {project.client}
-          </h3>
-
-          <p className="showcase-card__summary">{project.summary}</p>
-
-          {project.stores ? (
-            <div className="stores">
-              {project.stores.ios ? (
-                <span className="store">
-                  <AppleMark size={16} />
-                  <span>
-                    <em>{ui.appStore}</em>
-                    <b>
-                      <Star size={11} fill="currentColor" strokeWidth={0} aria-hidden="true" />
-                      {project.stores.ios}
-                    </b>
-                  </span>
-                </span>
-              ) : null}
-              {project.stores.android ? (
-                <span className="store">
-                  <GooglePlayMark size={16} />
-                  <span>
-                    <em>{ui.googlePlay}</em>
-                    <b>
-                      <Star size={11} fill="currentColor" strokeWidth={0} aria-hidden="true" />
-                      {project.stores.android}
-                    </b>
-                  </span>
-                </span>
-              ) : null}
-            </div>
-          ) : null}
-
-          <p className="showcase-card__result">{project.result}</p>
-        </div>
-
-        <div className="showcase-card__art" aria-hidden="true">
-          <span className="showcase-card__phone showcase-card__phone--back">
-            <AppScreen hue={project.hue} variant={VARIANTS[(index + 1) % VARIANTS.length]} />
-          </span>
-          <span className="showcase-card__phone showcase-card__phone--front">
-            <AppScreen hue={project.hue} variant={VARIANTS[index % VARIANTS.length]} />
-          </span>
-        </div>
-      </Link>
-
-      {/* The reveal wrapper is the collapsing grid row. The quote cannot
-          collapse itself: its padding would still take space. */}
-      {project.voice ? (
-        <div className="showcase-card__reveal">
-          <Link href={localePath(locale, '/work/' + project.slug)} className="showcase-card__voice">
-            <span className="showcase-card__avatar" aria-hidden="true">
-              {project.voice.name.charAt(0)}
-            </span>
-            <span className="showcase-card__voice-text">
-              <strong>
-                {project.voice.name} — {project.voice.role}
-              </strong>
-              <em>{project.voice.quote}</em>
-            </span>
-            <span className="showcase-card__case">{ui.caseStudyBadge}</span>
           </Link>
+        </h3>
+
+        <p className="tile__summary">{project.summary}</p>
+
+        {stores ? (
+          <ul className="tile__stores">
+            {stores.ios ? (
+              <StoreBadge mark={<AppleMark size={14} />} name={ui.appStore} rating={stores.ios} />
+            ) : null}
+            {stores.android ? (
+              <StoreBadge
+                mark={<GooglePlayMark size={14} />}
+                name={ui.googlePlay}
+                rating={stores.android}
+              />
+            ) : null}
+          </ul>
+        ) : null}
+
+        <div className="tile__foot">
+          <p className="tile__result">{project.result}</p>
+          {/* Decorative: the card already has a link with an accessible name,
+              so announcing the same destination twice is noise. */}
+          <span className="tile__go" aria-hidden="true">
+            {ui.caseStudyBadge}
+            <ArrowUpRight size={15} strokeWidth={2.6} />
+          </span>
         </div>
-      ) : null}
-    </div>
+
+        {lead && project.voice ? (
+          <figure className="tile__voice">
+            <blockquote>{project.voice.quote}</blockquote>
+            <figcaption>
+              {project.voice.name} · {project.voice.role}
+            </figcaption>
+          </figure>
+        ) : null}
+      </div>
+    </article>
+  )
+}
+
+function StoreBadge({
+  mark,
+  name,
+  rating,
+}: {
+  mark: ReactNode
+  name: string
+  rating: string
+}) {
+  return (
+    <li className="store-badge">
+      <span className="store-badge__mark">{mark}</span>
+      <span className="store-badge__text">
+        <em>{name}</em>
+        <b>
+          <Star size={11} strokeWidth={0} aria-hidden="true" />
+          {rating}
+        </b>
+      </span>
+    </li>
   )
 }
 
 function categoryIcon(categories: { label: string; icon: string }[], category: string): string {
   return categories.find((c) => c.label === category)?.icon ?? 'grid'
+}
+
+/* The second device shows a different part of the same product. Deterministic,
+   not random: a random pairing would differ between the server render and the
+   client one and trip a hydration mismatch. */
+function pairScreen(screen: ScreenVariant): ScreenVariant {
+  const pairs: Record<ScreenVariant, ScreenVariant> = {
+    track: 'finance',
+    finance: 'track',
+    catalog: 'schedule',
+    schedule: 'catalog',
+  }
+  return pairs[screen]
 }

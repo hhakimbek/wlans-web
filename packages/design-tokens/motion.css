@@ -16,6 +16,7 @@
   --dur-base:    240ms; /* default enter                                    */
   --dur-slow:    360ms; /* surface / sheet enter, material arrival          */
   --dur-page:    480ms; /* route transition                                 */
+  --dur-ambient: 620ms; /* photographic drift — never a UI state change      */
 
   /* ── Easing ────────────────────────────────────────────────────────────
      `--ease-out` leaves fast and settles soft: the web analogue of a
@@ -52,6 +53,7 @@
 [data-motion='reduced'] {
   --dur-slow:    280ms;
   --dur-page:    320ms;
+  --dur-ambient: 400ms;
   --stagger:     28ms;
   --stagger-max: 4;
   --reveal-y:    8px;
@@ -66,6 +68,7 @@
   --dur-base:    1ms;
   --dur-slow:    1ms;
   --dur-page:    1ms;
+  --dur-ambient: 1ms;
   --stagger:     0ms;
   --stagger-max: 0;
   --reveal-y:    0px;
@@ -81,6 +84,7 @@
     --dur-base:    1ms;
     --dur-slow:    1ms;
     --dur-page:    1ms;
+    --dur-ambient: 1ms;
     --stagger:     0ms;
     --stagger-max: 0;
     --reveal-y:    0px;

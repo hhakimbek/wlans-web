@@ -48,7 +48,12 @@ export default async function ContactPage({ params }: Params) {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container contact-layout">
           <div className="card contact-form-card">
-            <h2 className="contact-form-card__title">{t.briefTitle}</h2>
+            {/* The brief's own header, ruled off from the fields. Without it
+                the form opens on a bare label and the card has no subject. */}
+            <div className="contact-form-card__head">
+              <h2 className="contact-form-card__title">{t.briefTitle}</h2>
+              <p className="contact-form-card__note">{t.beforeYouWriteBody}</p>
+            </div>
             <InquiryForm
               locale={locale}
               options={{
@@ -111,11 +116,6 @@ export default async function ContactPage({ params }: Params) {
                   </li>
                 ))}
               </ol>
-            </div>
-
-            <div className="card card--soft">
-              <h3 className="card__title">{t.beforeYouWrite}</h3>
-              <p className="card__body">{t.beforeYouWriteBody}</p>
             </div>
           </aside>
         </div>

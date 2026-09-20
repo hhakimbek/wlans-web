@@ -1,0 +1,1020 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   The device, and the interface inside it.
+
+   ONE RULE GOVERNS THIS WHOLE FILE: every length is a percentage of the
+   device's own width (`cqw`, against the `container-type: inline-size` on
+   `.device`). That is what lets the same markup be correct at 88px in a card
+   and at 300px in a hero. The previous five hand-rolled phone frames each
+   hard-coded a bezel in px, so the same "phone" was a slab at one size and a
+   picture frame at another.
+
+   Proportions are taken from the hardware, not invented:
+     rail          ≈ 3.0%  of body width
+     outer radius  ≈ 14.6%
+     inner radius  = outer − rail   (concentric; mismatched curves are the
+                     single detail that makes a CSS phone look drawn)
+     island        ≈ 30% wide, 8.4% tall, 2.4% from the top of the screen
+   ───────────────────────────────────────────────────────────────────────── */
+
+.device {
+  container-type: inline-size;
+  position: relative;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 9 / 19.5;
+}
+
+/* Three things make this read as metal and not as a grey rectangle: a rail
+   gradient whose light source is fixed top-left, hairline inset highlights
+   that catch that light on the top and bottom edges, and a shadow in two
+   layers — one tight contact shadow that draws the silhouette, one wide cast
+   that lifts it. Remove any one and it flattens. */
+.device__body {
+  position: relative;
+  height: 100%;
+  padding: 3cqw;
+  border-radius: 14.6cqw;
+  background: linear-gradient(
+    143deg,
+    oklch(0.66 0.008 260) 0%,
+    oklch(0.32 0.008 260) 7%,
+    oklch(0.235 0.006 260) 30%,
+    oklch(0.205 0.006 260) 58%,
+    oklch(0.28 0.008 260) 82%,
+    oklch(0.60 0.008 260) 100%
+  );
+  box-shadow:
+    inset 0 0 0 0.3cqw oklch(1 0 0 / 0.1),
+    inset 0 0.3cqw 0.3cqw oklch(1 0 0 / 0.3),
+    inset 0 -0.3cqw 0.4cqw oklch(0 0 0 / 0.55),
+    var(--shadow-device);
+}
+
+[data-tone='silver'] .device__body {
+  background: linear-gradient(
+    143deg,
+    oklch(0.94 0.004 260) 0%,
+    oklch(0.68 0.004 260) 8%,
+    oklch(0.58 0.004 260) 32%,
+    oklch(0.52 0.004 260) 60%,
+    oklch(0.66 0.004 260) 84%,
+    oklch(0.9 0.004 260) 100%
+  );
+}
+
+/* Volume rocker and mute switch: one bar plus two offset copies of itself, so
+   three controls cost one pseudo-element. Offsets are in cqw so the spacing
+   scales with the body — a box-shadow offset cannot be a percentage, which is
+   why the old version was tuned for exactly one size. */
+.device__body::before {
+  content: '';
+  position: absolute;
+  left: -0.55cqw;
+  top: 18.5%;
+  width: 0.85cqw;
+  height: 4.4%;
+  border-radius: 0.6cqw 0 0 0.6cqw;
+  background: linear-gradient(90deg, oklch(0.5 0.006 260), oklch(0.28 0.006 260));
+  box-shadow:
+    0 13cqw 0 0 oklch(0.42 0.006 260),
+    0 24cqw 0 0 oklch(0.42 0.006 260);
+}
+
+/* Side button — longer, lower, on the opposite edge. */
+.device__body::after {
+  content: '';
+  position: absolute;
+  right: -0.55cqw;
+  top: 27%;
+  width: 0.85cqw;
+  height: 7.8%;
+  border-radius: 0 0.6cqw 0.6cqw 0;
+  background: linear-gradient(270deg, oklch(0.5 0.006 260), oklch(0.28 0.006 260));
+}
+
+.device__screen {
+  position: relative;
+  height: 100%;
+  border-radius: 11.6cqw; /* 14.6 − 3, concentric with the rail */
+  overflow: hidden;
+  background: oklch(0.99 0.002 250);
+  box-shadow: inset 0 0 0 0.22cqw oklch(0 0 0 / 0.55);
+}
+
+/* A floating pill, not a notch cut into the bezel — that is what current
+   hardware looks like, and a 2018 notch dates the whole illustration. */
+.device__island {
+  position: absolute;
+  z-index: 5;
+  top: 2.4cqw;
+  left: 50%;
+  translate: -50% 0;
+  width: 30cqw;
+  height: 8.4cqw;
+  border-radius: 4.2cqw;
+  background: oklch(0.07 0.004 260);
+}
+
+/* The camera, offset inside the pill rather than centred in it. */
+.device__island::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 13%;
+  width: 4.4cqw;
+  height: 4.4cqw;
+  translate: 0 -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, oklch(0.44 0.05 240), oklch(0.11 0.02 260) 68%);
+}
+
+/* The diagonal reflection across the glass. Kept very low — above about 0.16
+   it stops reading as a reflection and starts reading as a gradient overlay. */
+.device__glare {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    118deg,
+    oklch(1 0 0 / 0.14) 0%,
+    oklch(1 0 0 / 0.05) 22%,
+    transparent 44%
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════════════
+   The interface
+   ═════════════════════════════════════════════════════════════════════════ */
+
+.scr {
+  --a: oklch(0.53 0.185 var(--scr-hue, 263));
+  --a-soft: oklch(0.955 0.028 var(--scr-hue, 263));
+  --a-mid: oklch(0.84 0.09 var(--scr-hue, 263));
+  --scr-ink: oklch(0.26 0.02 var(--scr-hue, 263));
+  --scr-mute: oklch(0.62 0.014 var(--scr-hue, 263));
+  --scr-line: oklch(0.92 0.008 var(--scr-hue, 263));
+  --scr-paper: oklch(0.984 0.003 var(--scr-hue, 263));
+
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--scr-paper);
+  color: var(--scr-ink);
+  font-size: 3.4cqw;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────── */
+
+.scr__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  height: 12cqw;
+  padding: 1.5cqw 6.5cqw 0;
+  font-size: 3.5cqw;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.scr__status-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+}
+
+.scr__si {
+  height: 3cqw;
+  width: auto;
+  fill: currentColor;
+}
+
+.scr__battery {
+  position: relative;
+  width: 6.4cqw;
+  height: 3.2cqw;
+  border: 0.4cqw solid currentColor;
+  border-radius: 1.1cqw;
+  opacity: 0.55;
+}
+
+.scr__battery::after {
+  content: '';
+  position: absolute;
+  right: -1.1cqw;
+  top: 50%;
+  translate: 0 -50%;
+  width: 0.7cqw;
+  height: 1.3cqw;
+  border-radius: 0 0.5cqw 0.5cqw 0;
+  background: currentColor;
+}
+
+.scr__battery-fill {
+  position: absolute;
+  inset: 0.4cqw;
+  width: 62%;
+  border-radius: 0.4cqw;
+  background: currentColor;
+}
+
+/* ── Tab bar ────────────────────────────────────────────────────────────── */
+
+.scr__tabs {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: center;
+  flex: none;
+  height: 14cqw;
+  padding-bottom: 3cqw;
+  border-top: 0.28cqw solid var(--scr-line);
+  background: oklch(1 0 0);
+}
+
+.scr__tab {
+  display: grid;
+  place-items: center;
+}
+
+.scr__tab svg {
+  width: 5.4cqw;
+  height: 5.4cqw;
+  fill: var(--scr-mute);
+  opacity: 0.5;
+}
+
+.scr__tab[data-active='true'] svg {
+  fill: var(--a);
+  opacity: 1;
+}
+
+.scr__home {
+  position: absolute;
+  bottom: 1.4cqw;
+  left: 50%;
+  translate: -50% 0;
+  width: 34cqw;
+  height: 1.1cqw;
+  border-radius: 1cqw;
+  background: oklch(0.2 0.01 260 / 0.75);
+}
+
+/* ── Shared blocks ──────────────────────────────────────────────────────── */
+
+.scr__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 3.4cqw;
+  padding: 1cqw 5cqw 0;
+}
+
+.scr__cta {
+  display: grid;
+  place-items: center;
+  flex: none;
+  height: 11cqw;
+  margin-top: auto;
+  margin-bottom: 3.5cqw;
+  border-radius: 3.4cqw;
+  background: var(--a);
+  color: oklch(1 0 0);
+  font-size: 3.6cqw;
+  font-weight: 700;
+}
+
+.scr__section-label {
+  font-size: 3.2cqw;
+  font-weight: 700;
+  color: var(--scr-mute);
+}
+
+/* ── track ──────────────────────────────────────────────────────────────── */
+
+.scr__map {
+  position: relative;
+  flex: none;
+  height: 44%;
+  margin-top: -12cqw; /* the map runs up behind the status bar */
+}
+
+.scr__map svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.scr-map__ground {
+  fill: oklch(0.955 0.008 var(--scr-hue, 263));
+}
+.scr-map__block {
+  fill: oklch(0.925 0.012 var(--scr-hue, 263));
+}
+.scr-map__road {
+  stroke: oklch(1 0 0);
+  stroke-width: 4;
+  fill: none;
+}
+.scr-map__route {
+  fill: none;
+  stroke: var(--a);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.scr-map__from {
+  fill: oklch(1 0 0);
+  stroke: var(--a);
+  stroke-width: 2.4;
+}
+.scr-map__halo {
+  fill: var(--a);
+  opacity: 0.18;
+}
+.scr-map__dot {
+  fill: var(--a);
+}
+.scr-map__tick {
+  fill: none;
+  stroke: oklch(1 0 0);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scr__eta {
+  position: absolute;
+  right: 5cqw;
+  bottom: 8cqw;
+  display: flex;
+  align-items: baseline;
+  gap: 0.8cqw;
+  padding: 1.6cqw 3cqw;
+  border-radius: 3cqw;
+  background: oklch(1 0 0);
+  box-shadow: 0 1cqw 3cqw oklch(0.2 0.02 260 / 0.18);
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__eta b {
+  font-size: 4.6cqw;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.scr__eta em {
+  font-style: normal;
+  font-size: 2.8cqw;
+  font-weight: 600;
+  color: var(--scr-mute);
+}
+
+.scr__sheet {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 3cqw;
+  margin-top: -5cqw;
+  padding: 2.4cqw 5cqw 0;
+  border-radius: 6cqw 6cqw 0 0;
+  background: oklch(1 0 0);
+  box-shadow: 0 -1cqw 4cqw oklch(0.2 0.02 260 / 0.1);
+}
+
+.scr__grabber {
+  align-self: center;
+  width: 11cqw;
+  height: 1cqw;
+  border-radius: 1cqw;
+  background: var(--scr-line);
+}
+
+.scr__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqw;
+}
+
+.scr__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.4cqw;
+  padding: 1.2cqw 2.6cqw;
+  border-radius: 3cqw;
+  background: var(--a-soft);
+  color: oklch(0.42 0.15 var(--scr-hue, 263));
+  font-size: 2.9cqw;
+  font-weight: 700;
+}
+
+.scr__live i {
+  width: 1.8cqw;
+  height: 1.8cqw;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.scr__meta {
+  font-size: 2.9cqw;
+  font-weight: 600;
+  color: var(--scr-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__person {
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+}
+
+.scr__avatar {
+  flex: none;
+  width: 11cqw;
+  height: 11cqw;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--a-mid), var(--a-soft));
+}
+
+.scr__person-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.scr__person-text b {
+  display: block;
+  font-size: 3.5cqw;
+  font-weight: 700;
+}
+
+.scr__person-text em {
+  display: block;
+  margin-top: 0.6cqw;
+  font-style: normal;
+  font-size: 2.9cqw;
+  font-weight: 500;
+  color: var(--scr-mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__call {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 10cqw;
+  height: 10cqw;
+  border-radius: 50%;
+  background: var(--a-soft);
+}
+
+.scr__call svg {
+  width: 4.6cqw;
+  height: 4.6cqw;
+  fill: var(--a);
+}
+
+.scr__progress {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1.2cqw;
+}
+
+.scr__progress span {
+  height: 1.2cqw;
+  border-radius: 1cqw;
+  background: var(--scr-line);
+}
+
+.scr__progress span[data-done='true'] {
+  background: var(--a);
+}
+
+/* The two ends of the job, with the leg between them drawn as a rule. A
+   delivery screen that does not say where the parcel is going is missing the
+   one fact the screen exists for. */
+.scr__stops {
+  display: grid;
+  gap: 3.4cqw;
+  padding-left: 1cqw;
+}
+
+.scr__stop {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2.8cqw;
+}
+
+.scr__stop i {
+  flex: none;
+  width: 2.6cqw;
+  height: 2.6cqw;
+  border-radius: 50%;
+  border: 0.7cqw solid var(--scr-line);
+  background: oklch(1 0 0);
+}
+
+.scr__stop[data-done='true'] i {
+  border-color: var(--a);
+}
+
+.scr__stop:first-child::after {
+  content: '';
+  position: absolute;
+  left: 1cqw;
+  top: 2.8cqw;
+  width: 0.6cqw;
+  height: 3.6cqw;
+  border-radius: 0.4cqw;
+  background: var(--scr-line);
+}
+
+.scr__stop b {
+  height: 2.2cqw;
+  width: 62%;
+  border-radius: 1.1cqw;
+  background: oklch(0.88 0.01 var(--scr-hue, 263));
+}
+
+.scr__stop:last-child b {
+  width: 44%;
+}
+
+/* ── finance ────────────────────────────────────────────────────────────── */
+
+/* The balance card is ink, not the accent hue: a saturated card plus a
+   saturated primary button is two loud things fighting inside a 170px frame. */
+.scr__card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqw;
+  padding: 4.4cqw;
+  border-radius: 5cqw;
+  background: linear-gradient(150deg, oklch(0.29 0.015 var(--scr-hue, 263)), oklch(0.18 0.01 var(--scr-hue, 263)));
+  color: oklch(1 0 0);
+}
+
+.scr__card-label {
+  font-size: 2.8cqw;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+.scr__card-amount {
+  font-size: 7cqw;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__card-amount i {
+  font-style: normal;
+  font-size: 4.4cqw;
+  opacity: 0.6;
+}
+
+.scr__card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.6cqw;
+}
+
+.scr__card-foot em {
+  font-style: normal;
+  font-size: 3cqw;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.scr__card-chip {
+  width: 8cqw;
+  height: 5cqw;
+  border-radius: 1.4cqw;
+  background: linear-gradient(120deg, var(--a-mid), var(--a));
+}
+
+.scr__actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.6cqw;
+}
+
+.scr__action {
+  display: grid;
+  justify-items: center;
+  gap: 1.4cqw;
+}
+
+.scr__action-icon {
+  display: grid;
+  place-items: center;
+  width: 11cqw;
+  height: 11cqw;
+  border-radius: 3.4cqw;
+  background: var(--a-soft);
+}
+
+.scr__action-icon svg {
+  width: 5cqw;
+  height: 5cqw;
+  fill: none;
+  stroke: var(--a);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scr__action em {
+  font-style: normal;
+  font-size: 2.5cqw;
+  font-weight: 600;
+  color: var(--scr-mute);
+}
+
+.scr__list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.scr__list-head b {
+  font-size: 3.6cqw;
+  font-weight: 700;
+}
+
+.scr__list-head em {
+  font-style: normal;
+  font-size: 2.9cqw;
+  font-weight: 600;
+  color: var(--a);
+}
+
+.scr__list {
+  display: grid;
+  gap: 2.4cqw;
+}
+
+.scr__move {
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+}
+
+.scr__move-icon {
+  flex: none;
+  width: 9.4cqw;
+  height: 9.4cqw;
+  border-radius: 3cqw;
+  background: var(--a-soft);
+}
+
+.scr__move-icon[data-delta='in'] {
+  background: oklch(0.93 0.06 152);
+}
+
+.scr__move-text {
+  flex: 1;
+  display: grid;
+  gap: 1.4cqw;
+}
+
+/* Deliberately wordless: a made-up merchant name is a fabricated detail, and
+   at this size a ruled line reads as a name anyway. */
+.scr__move-text b {
+  width: 58%;
+  height: 2.4cqw;
+  border-radius: 1.2cqw;
+  background: oklch(0.86 0.01 var(--scr-hue, 263));
+}
+
+.scr__move-text em {
+  width: 36%;
+  height: 1.9cqw;
+  border-radius: 1cqw;
+  background: oklch(0.92 0.008 var(--scr-hue, 263));
+}
+
+.scr__move-amount {
+  font-size: 3.1cqw;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.scr__move-amount[data-delta='in'] {
+  color: oklch(0.5 0.14 152);
+}
+
+/* ── catalog ────────────────────────────────────────────────────────────── */
+
+.scr__search {
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+  flex: none;
+  height: 10cqw;
+  padding: 0 3.4cqw;
+  border-radius: 3.2cqw;
+  background: oklch(0.945 0.008 var(--scr-hue, 263));
+}
+
+.scr__search svg {
+  width: 4.4cqw;
+  height: 4.4cqw;
+  fill: none;
+  stroke: var(--scr-mute);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.scr__search em {
+  font-style: normal;
+  font-size: 3.1cqw;
+  font-weight: 500;
+  color: var(--scr-mute);
+}
+
+.scr__chips {
+  display: flex;
+  gap: 1.8cqw;
+  flex: none;
+}
+
+.scr__chips span {
+  height: 7cqw;
+  min-width: 14cqw;
+  padding: 0 3cqw;
+  display: grid;
+  place-items: center;
+  border-radius: 3.5cqw;
+  background: oklch(0.945 0.008 var(--scr-hue, 263));
+  font-size: 2.8cqw;
+  font-weight: 600;
+  color: var(--scr-mute);
+}
+
+.scr__chips span[data-active='true'] {
+  background: var(--a);
+  color: oklch(1 0 0);
+}
+
+.scr__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: start;
+  gap: 2.6cqw;
+  min-height: 0;
+}
+
+.scr__tile {
+  display: grid;
+  gap: 1.8cqw;
+  padding: 1.8cqw;
+  border-radius: 4cqw;
+  background: oklch(1 0 0);
+  box-shadow: 0 0.4cqw 1.6cqw oklch(0.2 0.02 260 / 0.07);
+}
+
+.scr__tile-media {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 2.8cqw;
+  overflow: hidden;
+  background: var(--a-soft);
+}
+
+.scr__tile-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scr__tile[data-crop='1'] .scr__tile-media img {
+  object-position: 82% 28%;
+  scale: 1.25;
+}
+
+.scr__tile[data-crop='2'] .scr__tile-media img {
+  object-position: 18% 76%;
+  scale: 1.12;
+}
+
+.scr__tile-text {
+  display: grid;
+  gap: 1.2cqw;
+  padding: 0 0.6cqw 0.6cqw;
+}
+
+.scr__tile-text b {
+  width: 74%;
+  height: 2.2cqw;
+  border-radius: 1.1cqw;
+  background: oklch(0.88 0.01 var(--scr-hue, 263));
+}
+
+.scr__tile-text em {
+  font-style: normal;
+  font-size: 2.9cqw;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── schedule ───────────────────────────────────────────────────────────── */
+
+.scr__hero {
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+  flex: none;
+  padding: 3cqw;
+  border-radius: 4.4cqw;
+  background: oklch(1 0 0);
+  box-shadow: 0 0.4cqw 1.6cqw oklch(0.2 0.02 260 / 0.07);
+}
+
+.scr__hero-media {
+  flex: none;
+  width: 16cqw;
+  height: 16cqw;
+  border-radius: 3.4cqw;
+  overflow: hidden;
+  background: var(--a-soft);
+}
+
+.scr__hero-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scr__hero-text {
+  display: grid;
+  gap: 1.8cqw;
+  flex: 1;
+  min-width: 0;
+}
+
+.scr__hero-text b {
+  width: 72%;
+  height: 2.8cqw;
+  border-radius: 1.4cqw;
+  background: oklch(0.86 0.01 var(--scr-hue, 263));
+}
+
+.scr__hero-text em {
+  width: 48%;
+  height: 2.1cqw;
+  border-radius: 1.1cqw;
+  background: oklch(0.92 0.008 var(--scr-hue, 263));
+}
+
+.scr__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 1cqw;
+  font-size: 2.8cqw;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__rating svg {
+  width: 3cqw;
+  height: 3cqw;
+  fill: oklch(0.75 0.15 75);
+}
+
+.scr__days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1.2cqw;
+  flex: none;
+}
+
+.scr__days span {
+  display: grid;
+  justify-items: center;
+  gap: 0.8cqw;
+  padding: 1.8cqw 0;
+  border-radius: 2.8cqw;
+  background: oklch(1 0 0);
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__days em {
+  font-style: normal;
+  font-size: 2.2cqw;
+  font-weight: 600;
+  color: var(--scr-mute);
+}
+
+.scr__days b {
+  font-size: 2.9cqw;
+  font-weight: 700;
+}
+
+.scr__days span[data-active='true'] {
+  background: var(--a);
+  color: oklch(1 0 0);
+}
+
+.scr__days span[data-active='true'] em {
+  color: oklch(1 0 0 / 0.75);
+}
+
+.scr__slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2cqw;
+  flex: none;
+}
+
+.scr__slots span {
+  display: grid;
+  place-items: center;
+  height: 8.6cqw;
+  border-radius: 2.8cqw;
+  border: 0.35cqw solid var(--scr-line);
+  background: oklch(1 0 0);
+  font-size: 2.9cqw;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__slots span[data-active='true'] {
+  border-color: var(--a);
+  background: var(--a-soft);
+  color: oklch(0.4 0.15 var(--scr-hue, 263));
+}
+
+.scr__slots span[data-off='true'] {
+  color: var(--scr-mute);
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+/* The chosen slot restated next to the action, which is what a booking screen
+   does — the button alone leaves the reader checking the grid again. */
+.scr__confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  margin-top: auto;
+  margin-bottom: 3.5cqw;
+  padding-top: 3cqw;
+  border-top: 0.28cqw solid var(--scr-line);
+}
+
+.scr__confirm-text {
+  display: grid;
+  gap: 1.4cqw;
+  flex: 1;
+  min-width: 0;
+}
+
+.scr__confirm-text b {
+  width: 62%;
+  height: 2.2cqw;
+  border-radius: 1.1cqw;
+  background: oklch(0.88 0.01 var(--scr-hue, 263));
+}
+
+.scr__confirm-text em {
+  font-style: normal;
+  font-size: 3.2cqw;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.scr__cta--inline {
+  flex: none;
+  margin: 0;
+  padding-inline: 5cqw;
+  height: 9.6cqw;
+}
+
+/* ── Reduced transparency ───────────────────────────────────────────────── */
+
+@media (prefers-reduced-transparency: reduce) {
+  .device__glare {
+    display: none;
+  }
+}
